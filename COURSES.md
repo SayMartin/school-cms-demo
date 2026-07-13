@@ -11,10 +11,7 @@ Update this file on every schema change.
 | File                                                  | Purpose                                                                                              |
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | `src/lib/db/schema.ts`                                | Drizzle table `course`                                                                                 |
-| `drizzle/migrations/0037_kurs.sql`                    | SQL migration that created the table (as `Kurs`)                                                       |
-| `drizzle/migrations/0047_kurs_blocks.sql`             | Added the `blocks` column                                                                              |
-| `drizzle/migrations/0065_detail_heading_color.sql`    | Added the `headingColor` column                                                                        |
-| `drizzle/migrations/0091_english_rename.sql`          | Renamed the table `Kurs` → `Course` (and `KursAvdelning` → `CourseDepartment`)                          |
+| `drizzle/migrations/0001_init.sql`                    | Consolidated schema migration (creates `Course` and all other tables in one shot)                      |
 | `src/app/api/courses/route.ts`                        | GET (list, `?type=`) + POST                                                                            |
 | `src/app/api/courses/[slug]/route.ts`                 | GET + PUT + DELETE per slug                                                                             |
 | `src/app/studio/manage-courses/page.tsx`              | Studio CRUD list with type tabs (all / education programs / summer courses / evening courses / short courses) |
@@ -30,10 +27,10 @@ Update this file on every schema change.
 
 Schema changes after the unification:
 
-- `parentProgramId` → `parentKursId` (migration 0060)
-- `applicationText` + `locationText` added (migration 0068)
-- `durationWeeks`, `sessionCount`, `sessionDuration` removed (migration 0069)
-- Table renamed `Kurs` → `Course`, column `kursId` → `courseId` on `CourseInstance`/`CourseDepartment` (migration 0091)
+- `parentProgramId` → `parentKursId`
+- `applicationText` + `locationText` added
+- `durationWeeks`, `sessionCount`, `sessionDuration` removed
+- Table renamed `Kurs` → `Course`, column `kursId` → `courseId` on `CourseInstance`/`CourseDepartment`
 
 ---
 
@@ -168,7 +165,7 @@ Schema changes after the unification:
 
 ### Departments (many-to-many)
 
-The `CourseDepartment` table (renamed from `KursAvdelning` in migration 0091) links a course to one or more departments. Read via JOIN in the API routes and sent as `departmentIds: string[]` in the Studio form.
+The `CourseDepartment` table (renamed from `KursAvdelning`) links a course to one or more departments. Read via JOIN in the API routes and sent as `departmentIds: string[]` in the Studio form.
 
 ---
 
