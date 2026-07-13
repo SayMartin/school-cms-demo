@@ -11,6 +11,8 @@ It runs on its own Cloudflare account, D1 database, and R2 bucket. Outbound
 email is mocked (nothing is ever sent to a real inbox), so every public form
 and the full CMS ("Studio") can be tried safely.
 
+**Live demo:** [school-cms-demo.appfinningar.se](https://school-cms-demo.appfinningar.se)
+
 **Try the CMS yourself:** the [`/sign-in`](/sign-in) page lists four
 demo accounts (admin, editorial staff, kitchen-menu manager, facilities) with
 their passwords shown directly on the page — click one to autofill the form
@@ -33,7 +35,11 @@ and explore the matching portal (`/studio`, `/restaurant-admin`,
 
 ---
 
-## Getting Started
+## Running It Locally
+
+This repo is shared for viewing and code review — see the live demo above to
+try the CMS without setting anything up. The steps below are for reviewers
+who want to run it locally or read the code in an editor.
 
 ### Prerequisites
 
@@ -44,7 +50,7 @@ and explore the matching portal (`/studio`, `/restaurant-admin`,
 ### 1. Clone and install
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/SayMartin/school-cms-demo.git
 cd school-cms-demo
 npm install
 ```
@@ -253,3 +259,10 @@ school's production infrastructure.
 | [EMAIL.md](EMAIL.md) | Email setup — Gmail API sending, DNS/MX migration plan |
 | [CLAUDE.md](CLAUDE.md) | Claude Code pointer → AGENTS.md |
 | [.env.local.example](.env.local.example) | Environment variable template |
+
+---
+
+## License
+
+All rights reserved — see [LICENSE](LICENSE). This repository is published
+for viewing and code review, not for reuse.
