@@ -1,0 +1,67 @@
+{
+	// Cloudflare Workers / Pages configuration
+	// Docs: https://developers.cloudflare.com/workers/wrangler/configuration/
+	// DEMO COPY — separate Cloudflare account, separate D1/R2. No connection to
+	// any real production project or real school's infrastructure. This is the
+	// "School CMS Demo" project; "Demo Folk High School" here is just the
+	// example implementation's fictional content, not a real school.
+	"name": "school-cms-demo",
+	// account_id intentionally omitted from version control — wrangler
+	// auto-selects it if your API token only has access to one account;
+	// otherwise add your own "account_id": "..." here locally (untracked).
+	"compatibility_date": "2026-02-01",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"main": ".open-next/worker.js",
+	"workers_dev": false,
+	"preview_urls": true,
+	"assets": {
+		"directory": ".open-next/assets",
+		"binding": "ASSETS",
+	},
+	// Non-secret runtime config — auth secret is set via `wrangler secret put BETTER_AUTH_SECRET`
+	"vars": {
+		"APP_ENV": "dev",
+		// Blocks deletes and account approve/reject/archive/restore/change-role
+		// at the API layer, regardless of which demo account is used to log in.
+		// Set to "false" to re-enable for a non-public deployment.
+		"DEMO_LOCKDOWN": "true",
+		"BETTER_AUTH_URL": "https://school-cms-demo.appfinningar.se",
+		"NEXT_PUBLIC_APP_URL": "https://school-cms-demo.appfinningar.se",
+		// Cloudflare Turnstile test key — always passes, no real registration needed
+		"TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
+		// Demo addresses — sending is fully mocked in src/lib/email/client.ts
+		// anyway; this is just defense-in-depth so nothing points at a real domain.
+		"INCIDENT_EMAIL": "incident@example.com",
+		"FASTIGHET_EMAIL": "fastighet@example.com",
+		"ADMIN_EMAIL": "admin@example.com",
+		"GOOGLE_SENDER_EMAIL": "noreply@example.com",
+		"MOTESPLATS_EMAIL": "motesplats@example.com",
+		"ANSOKAN_EMAIL": "ansokan@example.com",
+	},
+	// D1 — separate demo database, empty to start, filled with invented data
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "school-cms-demo-db",
+			"database_id": "46787978-992e-428a-ad41-e958033510df",
+			"migrations_dir": "drizzle/migrations",
+		},
+	],
+	// DEMO COPY: no production environment exists in this configuration. There
+	// is nowhere for a deploy:prod or migrate:prod to go — impossible to
+	// accidentally hit a real domain or real prod D1/R2.
+	"env": {},
+	// R2 — separate demo bucket
+	"r2_buckets": [
+		{
+			"binding": "STORAGE",
+			"bucket_name": "school-cms-demo-bucket",
+		},
+	],
+	"observability": {
+		"enabled": true,
+		"head_sampling_rate": 1, // optional. default = 1.
+	},
+}

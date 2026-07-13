@@ -1,0 +1,451 @@
+@import "tailwindcss";
+
+/* Tailwind v4 safelist: dynamiskt genererade klasser som JIT inte kan detektera */
+@source inline("border-t-{brand-green,brand-green-dark,brand-pink,brand-pink-dark,brand-yellow,brand-yellow-dark,brand-blue,brand-blue-dark}");
+
+/*
+ * Typography defaults
+ *
+ * Placed in @layer base so that Tailwind utility classes (text-2xl, font-bold,
+ * text-gray-700 etc.) always win over these defaults. CSS cascade order:
+ *   @layer base  <  @layer components  <  @layer utilities  <  unlayered CSS
+ *
+ * In practice: a page that writes <h1 className="text-2xl"> keeps text-2xl.
+ * A page that writes <h1> with no size class gets the text-3xl default below.
+ *
+ * font-family is driven by CSS variables set at runtime from the DB
+ * (layout.tsx injects a <style> tag with --font-h1 / --font-h2 / --font-body).
+ */
+@layer base {
+  /*
+   * Typografisk trappa — fallande skala från h1 ner till body.
+   * Alla Tailwind-klasser på ett element (t.ex. text-2xl) vinner
+   * alltid över dessa basvärden tack vare @layer-prioritetsordningen.
+   *
+   *  h1   clamp(1.875rem→3rem) / lh 1.2  / weight 500  (30–48px, display)
+   *  h2   clamp(1.125rem→1.25rem) / lh 1.3  / weight 600  (18–20px, stor klyfta från h1)
+   *  h3   clamp(1rem→1.125rem)    / lh 1.4  / weight 600  (16–18px, tätt steg under h2)
+   *  body 1rem (16px)             / lh 1.625  /weight 400         (tätt steg under h3)
+   *
+   *  Avsiktlig skala: stor klyfta h1→h2, sedan täta steg h2→h3→body.
+   *  h1, h2 och h3 använder clamp(); body är fast.
+   *
+   * Typsnitt styrs av CSS-variabler satta vid körning från DB
+   * (layout.tsx injicerar <style> med --font-h1, --font-h2, --font-h3, --font-body).
+   *
+   * h1  #111827  — nära svart (gray-900)
+   * h2  #111827  — nära svart (gray-900)
+   * h3  #374151  — mellangråt (gray-700)
+   * body #1f2937 — mörkgrå (gray-800), ärvs av <p>
+   */
+  h1 {
+    font-family: var(--font-h1, var(--font-geist-sans), sans-serif);
+    /* clamp(min, preferred, max): 30px på smal mobil → 48px på bred desktop */
+    font-size: clamp(1.875rem, 5vw, 3rem);
+    line-height: 1.2;
+    font-weight: 500;
+    color: #111827;
+  }
+  h2 {
+    font-family: var(--font-h2, var(--font-geist-sans), sans-serif);
+    /* clamp(min, preferred, max): 18px på smal mobil → 20px på bred desktop */
+    font-size: clamp(1.125rem, 2.5vw, 1.25rem);
+    line-height: 1.3;
+    font-weight: 600;
+    color: #111827;
+  }
+  h3 {
+    font-family: var(--font-h3, var(--font-geist-sans), sans-serif);
+    /* clamp(min, preferred, max): 16px på smal mobil → 18px på bred desktop */
+    font-size: clamp(1rem, 2.5vw, 1.125rem);
+    line-height: 1.4;
+    font-weight: 600;
+    color: #374151;
+  }
+  body {
+    font-family: var(--font-body, var(--font-geist-sans), sans-serif);
+    font-size: 1rem;
+    line-height: 1.625;
+    font-weight: 500;
+    color: #1f2937;
+  }
+}
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* Brand primary colors */
+  --color-brand-green: #affdaf;
+  --color-brand-green-dark: #4aad4a;
+  --color-brand-green-light: #e3ffe3;
+  --color-brand-yellow: #ffff50;
+  --color-brand-yellow-dark: #c8c800;
+  --color-brand-yellow-light: #ffff99;
+  --color-brand-pink: #fdb9fc;
+  --color-brand-pink-dark: #cc7acc;
+  --color-brand-pink-light: #fee8fe;
+  --color-brand-blue: #a0d4ff;
+  --color-brand-blue-dark: #3a82c8;
+  --color-brand-blue-light: #dceeff;
+  --color-brand-purple: #CBCBFF;
+  --color-brand-purple-dark: #9898cc;
+  --color-brand-purple-light: #e8e8ff;
+  --color-brand-parchment: #DCCDAA;
+  --color-brand-parchment-light: #EDE5CE;
+  --color-brand-parchment-dark: #C4B080;
+  --color-brand-parchment-dark-dark: #A89060;
+
+  --color-brand-green-original: #94d07b; /* Original green from the old site, no longer in use */
+
+  --color-brand-logo-facebook: #42ad4a; /* Used in the Facebook logo */
+}
+
+/*
+color slurp för att ta färgerna från bilderna i Trello-kortet.
+
+AFFDAF grön
+
+FFFF50 gul
+
+FDB9FC rosa */
+
+/* Prevent layout shift from scrollbar appearing/disappearing on navigation */
+html {
+  scrollbar-gutter: stable;
+}
+
+/* Rich text content rendered from Tiptap HTML */
+.rich-content h1 {
+  font-size: clamp(1.875rem, 4vw, 3rem);
+  font-weight: 500;
+  line-height: 1.2;
+  color: white;
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+}
+.rich-content h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+.rich-content h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #374151;
+  margin-top: 1.25rem;
+  margin-bottom: 0.375rem;
+}
+.rich-content p {
+  margin-bottom: 0.875rem;
+  line-height: 1.75;
+  color: #1f2937;
+}
+.rich-content p:last-child {
+  margin-bottom: 0;
+}
+.rich-content p:empty::before {
+  content: "\00a0";
+}
+.rich-content ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.875rem;
+  color: #1f2937;
+}
+.rich-content ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.875rem;
+  color: #1f2937;
+}
+.rich-content li {
+  margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
+  line-height: 1.7;
+}
+.rich-content blockquote {
+  border-left: 3px solid #affdaf;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: #4b5563;
+  font-style: italic;
+}
+.rich-content a:not(.btn-link) {
+  color: #4aad4a;
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+.rich-content a:not(.btn-link):hover {
+  color: #111827;
+}
+.rich-content a[target="_blank"]:not(.btn-link)::after,
+.rich-content a.rte-btn[target="_blank"]::after {
+  content: "";
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin-left: 0.3em;
+  vertical-align: middle;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234aad4a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6'/%3E%3Cpolyline points='15 3 21 3 21 9'/%3E%3Cline x1='10' y1='14' x2='21' y2='3'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.rich-content a.rte-btn[target="_blank"]::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23111827' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6'/%3E%3Cpolyline points='15 3 21 3 21 9'/%3E%3Cline x1='10' y1='14' x2='21' y2='3'/%3E%3C/svg%3E");
+}
+.rich-content a.rte-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 0.375rem;
+  border: 1px solid #4aad4a;
+  background-color: #affdaf;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #111827;
+  text-decoration: none;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
+}
+.rich-content a.rte-btn:hover {
+  background-color: #4aad4a;
+  color: #fff;
+}
+.rich-content strong {
+  font-weight: 600;
+}
+.rich-content em {
+  font-style: italic;
+}
+.rich-content hr {
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 1.5rem 0;
+}
+.rich-content details {
+  margin: 1.25rem 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+.rich-content summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #111827;
+  list-style: none;
+  padding: 0.625rem 0.875rem;
+  background: #f9fafb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+}
+.rich-content summary::-webkit-details-marker {
+  display: none;
+}
+.rich-content summary::marker {
+  content: "";
+}
+.rich-content summary::after {
+  content: "▸";
+  color: #9ca3af;
+  font-size: 0.75rem;
+  transition: transform 0.2s ease;
+}
+.rich-content details[open] > summary::after {
+  transform: rotate(90deg);
+}
+.rich-content details > *:not(summary) {
+  padding: 0 0.875rem;
+  margin: 0;
+}
+.rich-content details > *:not(summary):first-of-type {
+  padding-top: 0.875rem;
+}
+.rich-content details > *:not(summary):last-child {
+  padding-bottom: 0.875rem;
+}
+.rich-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.25rem 0;
+  font-size: 0.875rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: #f9fafb;
+}
+.rich-content th,
+.rich-content td {
+  border: none;
+  border-bottom: 2px solid #d1d5db;
+  padding: 0.65rem 1rem;
+  text-align: left;
+  vertical-align: middle;
+  color: #1f2937;
+}
+.rich-content th {
+  font-weight: normal;
+  color: #111827;
+  border-bottom: 2px solid #d1d5db;
+}
+.rich-content tr:last-child td {
+  border-bottom: none;
+}
+.rich-content tbody tr:hover td {
+  background: #f0fdf4;
+}
+.rich-content .rte-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin: 1rem 0;
+}
+@media (max-width: 767px) {
+  .rich-content .rte-two-col {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+/* Editor-only: dashed borders to make columns visible while editing */
+.ProseMirror .rte-two-col {
+  border: 1px dashed #d1d5db;
+  border-radius: 0.375rem;
+  padding: 0.5rem;
+  gap: 0.75rem;
+}
+.ProseMirror .rte-col {
+  border: 1px dashed #e5e7eb;
+  border-radius: 0.25rem;
+  padding: 0.375rem 0.5rem;
+  min-height: 2.5rem;
+}
+
+.rich-content-inverted h2 {
+  color: #fff;
+}
+.rich-content-inverted h3 {
+  color: #e5e7eb;
+}
+.rich-content-inverted p {
+  color: #d1d5db;
+}
+.rich-content-inverted ul {
+  color: #d1d5db;
+}
+.rich-content-inverted ol {
+  color: #d1d5db;
+}
+.rich-content-inverted blockquote {
+  border-left-color: #affdaf;
+  color: #9ca3af;
+}
+.rich-content-inverted a {
+  color: #affdaf;
+}
+.rich-content-inverted a:hover {
+  color: #fff;
+}
+.rich-content-inverted hr {
+  border-top-color: #374151;
+}
+
+/* Menu week-transition animations */
+@keyframes menu-exit-left {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0px);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-56px) scale(0.96);
+    filter: blur(2px);
+  }
+}
+@keyframes menu-exit-right {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0px);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(56px) scale(0.96);
+    filter: blur(2px);
+  }
+}
+@keyframes menu-enter-right {
+  from {
+    opacity: 0;
+    transform: translateX(64px) scale(0.96);
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0px);
+  }
+}
+@keyframes menu-enter-left {
+  from {
+    opacity: 0;
+    transform: translateX(-64px) scale(0.96);
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0px);
+  }
+}
+
+.menu-exit-left {
+  animation: menu-exit-left 200ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+.menu-exit-right {
+  animation: menu-exit-right 200ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+.menu-enter-right {
+  animation: menu-enter-right 340ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.menu-enter-left {
+  animation: menu-enter-left 340ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Rainbow animation for SchoolRainbow component */
+@keyframes brand-rainbow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+/* Disco animation for SchoolDisco component */
+@keyframes disco-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Tiptap editor placeholder */
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: #9ca3af;
+  pointer-events: none;
+  float: left;
+  height: 0;
+}
