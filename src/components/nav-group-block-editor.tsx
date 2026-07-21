@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { BrandColorPicker } from "@/components/brand-color-picker";
 import { ConfirmDeleteButton } from "@/components/confirm-delete-button";
 import { ImageUpload } from "@/components/image-upload";
@@ -7,6 +8,7 @@ import { HeadingStyleEditor } from "@/components/heading-style-editor";
 import { BallStyleEditor } from "@/components/ball-style-editor";
 import { mediaUrl } from "@/lib/r2/client";
 import { getColorHex } from "@/lib/brand-colors";
+import type { LinkCandidate } from "@/app/api/link-candidates/route";
 import type { NavGroupBlock, NavGruppItem } from "@/lib/blocks";
 
 type Props = {
@@ -17,6 +19,107 @@ type Props = {
 
 const inputClass =
   "w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-brand-green-dark focus:outline-none";
+
+function LinkPicker({
+  value,
+  onSelect,
+}: {
+  value: string;
+  onSelect: (href: string) => void;
+}) {
+  const [candidates, setCandidates] = useState<LinkCandidate[]>([]);
+  const [loadError, setLoadError] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    void fetch("/api/link-candidates")
+      .then((r) => {
+        if (!r.ok) throw new Error("unauthorized");
+        return r.json() as Promise<LinkCandidate[]>;
+      })
+      .then(setCandidates)
+      .catch(() => setLoadError(true));
+  }, []);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  const filtered = candidates.filter((c) =>
+    search
+      ? c.label.toLowerCase().includes(search.toLowerCase()) ||
+        c.href.toLowerCase().includes(search.toLowerCase())
+      : true,
+  );
+
+  const groups = Array.from(new Set(filtered.map((c) => c.group)));
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        disabled={loadError}
+        className="mt-1 text-sm text-brand-green-dark hover:underline disabled:cursor-not-allowed disabled:text-gray-600 disabled:no-underline"
+      >
+        {loadError ? "Could not load pages" : open ? "Close" : "Browse pages…"}
+      </button>
+
+      {open && (
+        <div className="absolute z-10 mt-1 w-80 max-w-[90vw] rounded-lg border border-gray-200 bg-white p-2 shadow-lg">
+          <input
+            type="search"
+            autoFocus
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search pages, courses, venues…"
+            className={inputClass}
+          />
+          <div className="mt-2 max-h-64 overflow-y-auto">
+            {candidates.length === 0 && !loadError && (
+              <p className="px-2 py-2 text-sm text-gray-600">Loading…</p>
+            )}
+            {filtered.length === 0 && candidates.length > 0 && (
+              <p className="px-2 py-2 text-sm text-gray-600">No matches.</p>
+            )}
+            {groups.map((group) => (
+              <div key={group} className="mb-1">
+                <p className="px-2 py-1 text-sm font-semibold uppercase tracking-wide text-gray-600">
+                  {group}
+                </p>
+                {filtered
+                  .filter((c) => c.group === group)
+                  .map((c) => (
+                    <button
+                      key={c.href}
+                      type="button"
+                      onClick={() => {
+                        onSelect(c.href);
+                        setOpen(false);
+                        setSearch("");
+                      }}
+                      className={`block w-full truncate rounded px-2 py-1.5 text-left text-sm hover:bg-gray-50 ${
+                        value === c.href ? "bg-brand-green-light text-brand-green-dark" : "text-gray-800"
+                      }`}
+                    >
+                      <span className="block truncate font-medium">{c.label}</span>
+                      <span className="block truncate text-gray-600">{c.href}</span>
+                    </button>
+                  ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function NavGroupBlockEditor({
   block,
@@ -153,6 +256,10 @@ export function NavGroupBlockEditor({
                       }
                       placeholder="/summer-courses"
                       className={`${inputClass} ${!item.href ? "border-amber-300 focus:border-amber-400" : ""}`}
+                    />
+                    <LinkPicker
+                      value={item.href}
+                      onSelect={(href) => updateItem(item.id, { href })}
                     />
                   </div>
                 </div>
