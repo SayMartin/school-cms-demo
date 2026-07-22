@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Search } from "lucide-react";
 import { BrandColorPicker } from "@/components/brand-color-picker";
 import { ConfirmDeleteButton } from "@/components/confirm-delete-button";
 import { ImageUpload } from "@/components/image-upload";
@@ -66,8 +67,9 @@ function LinkPicker({
         type="button"
         onClick={() => setOpen((o) => !o)}
         disabled={loadError}
-        className="mt-1 text-sm text-brand-green-dark hover:underline disabled:cursor-not-allowed disabled:text-gray-600 disabled:no-underline"
+        className="inline-flex items-center gap-1 text-sm font-medium text-brand-green-dark underline decoration-brand-green-dark/40 underline-offset-2 hover:decoration-brand-green-dark disabled:cursor-not-allowed disabled:text-gray-600 disabled:no-underline"
       >
+        <Search className="h-3.5 w-3.5 shrink-0" />
         {loadError ? "Could not load pages" : open ? "Close" : "Browse pages…"}
       </button>
 
@@ -222,12 +224,16 @@ export function NavGroupBlockEditor({
 
               {/* Fields */}
               <div className="p-3 space-y-3">
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <label className="text-sm font-medium text-gray-700 shrink-0">
-                      Name <span className="text-red-500">*</span>{" "}
-                      <span className="font-normal text-gray-600">(H3)</span>
-                    </label>
+                <div className="grid grid-cols-2 grid-rows-[auto_auto_auto] items-start gap-x-3 gap-y-1">
+                  <label className="text-sm font-medium text-gray-700 shrink-0">
+                    Name <span className="text-red-500">*</span>{" "}
+                    <span className="font-normal text-gray-600">(H3)</span>
+                  </label>
+                  <label className="text-sm font-medium text-gray-700 shrink-0">
+                    Link <span className="text-red-500">*</span>
+                  </label>
+
+                  <div className="flex h-5 items-center">
                     <HeadingStyleEditor
                       color={item.nameColor}
                       onColorChange={(c) =>
@@ -236,32 +242,30 @@ export function NavGroupBlockEditor({
                       visible={true}
                       onVisibleChange={() => {}}
                     />
-                    <input
-                      value={item.name}
-                      onChange={(e) =>
-                        updateItem(item.id, { name: e.target.value })
-                      }
-                      placeholder="e.g. Summer courses"
-                      className={`${inputClass} ${!item.name ? "border-amber-300 focus:border-amber-400" : ""}`}
-                    />
                   </div>
-                  <div className="flex flex-col justify-end">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Link <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      value={item.href}
-                      onChange={(e) =>
-                        updateItem(item.id, { href: e.target.value })
-                      }
-                      placeholder="/summer-courses"
-                      className={`${inputClass} ${!item.href ? "border-amber-300 focus:border-amber-400" : ""}`}
-                    />
+                  <div className="flex h-5 items-center">
                     <LinkPicker
                       value={item.href}
                       onSelect={(href) => updateItem(item.id, { href })}
                     />
                   </div>
+
+                  <input
+                    value={item.name}
+                    onChange={(e) =>
+                      updateItem(item.id, { name: e.target.value })
+                    }
+                    placeholder="e.g. Summer courses"
+                    className={`${inputClass} ${!item.name ? "border-amber-300 focus:border-amber-400" : ""}`}
+                  />
+                  <input
+                    value={item.href}
+                    onChange={(e) =>
+                      updateItem(item.id, { href: e.target.value })
+                    }
+                    placeholder="/summer-courses"
+                    className={`${inputClass} ${!item.href ? "border-amber-300 focus:border-amber-400" : ""}`}
+                  />
                 </div>
 
                 <div>
