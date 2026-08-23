@@ -64,10 +64,10 @@ export default function PrivacyPage() {
           holds. For anything on this page, including the requests described under{" "}
           <em>Your rights</em>, write to{" "}
           <a
-            href="mailto:martin@appfinningar.se"
+            href="mailto:support@appfinningar.se"
             className="font-medium text-brand-green-dark underline underline-offset-2 hover:text-gray-900"
           >
-            martin@appfinningar.se
+            support@appfinningar.se
           </a>
           .
         </p>
@@ -204,10 +204,10 @@ export default function PrivacyPage() {
         <p>
           Email{" "}
           <a
-            href="mailto:martin@appfinningar.se"
+            href="mailto:support@appfinningar.se"
             className="font-medium text-brand-green-dark underline underline-offset-2 hover:text-gray-900"
           >
-            martin@appfinningar.se
+            support@appfinningar.se
           </a>{" "}
           for any of these, and you will have an answer within 30 days, normally
           sooner. In practice the answer for a visitor is usually that there is

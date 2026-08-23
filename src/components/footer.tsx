@@ -236,10 +236,10 @@ export function Footer() {
           <p className="text-sm text-gray-700">
             © {new Date().getFullYear()}{" "}
             <a
-              href="mailto:martin@appfinningar.se"
+              href="mailto:support@appfinningar.se"
               className="hover:text-gray-900 transition-colors"
             >
-              Martin Persson — martin@appfinningar.se
+              Martin Persson — support@appfinningar.se
             </a>
           </p>
           <span className="text-gray-700 select-none" aria-hidden="true">
