@@ -9,7 +9,13 @@ person's data, and no connection to any real school's infrastructure.
 
 It runs on its own Cloudflare account, D1 database, and R2 bucket. Outbound
 email is mocked (nothing is ever sent to a real inbox), so every public form
-and the full CMS ("Studio") can be tried safely.
+and the full CMS ("Studio") can be tried safely. Because the demo logins below
+are public, anything stored in the demo database is readable by anyone — so the
+public forms — course applications, venue inquiries and maintenance reports —
+validate and show their confirmation screen but discard what you type rather than
+saving it, sign-up is closed, and there is a
+[privacy policy](https://school-cms-demo.appfinningar.se/privacy) explaining exactly
+what is and isn't kept.
 
 **Live demo:** [school-cms-demo.appfinningar.se](https://school-cms-demo.appfinningar.se)
 

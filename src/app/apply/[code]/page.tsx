@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { eq } from "drizzle-orm";
-import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getDb } from "@/lib/db/client";
 import { courseInstance, course } from "@/lib/db/schema";
 import {
@@ -67,13 +66,6 @@ export default async function AnsokPage({
     /* empty/invalid JSON → no extra fields */
   }
 
-  let siteKey = "";
-  try {
-    siteKey = getCloudflareContext().env.TURNSTILE_SITE_KEY ?? "";
-  } catch {
-    /* next dev doesn't run the Cloudflare runtime */
-  }
-
   return (
     <main className="mx-auto max-w-3xl px-4 py-12">
       <h1 className="text-center text-3xl font-semibold text-gray-900">
@@ -86,9 +78,7 @@ export default async function AnsokPage({
       {hasForm ? (
         <div className="mt-8">
           <ApplicationForm
-            instanceId={instance.id}
             extraFields={extraFields}
-            siteKey={siteKey}
             nextStep={nextStep}
           />
         </div>

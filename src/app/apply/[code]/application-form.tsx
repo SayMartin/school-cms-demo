@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { TurnstileWidget } from "@/components/turnstile-widget";
 import { DemoEmailNotice } from "@/components/demo-email-notice";
+import { DemoBlockedModal } from "@/components/demo-blocked-modal";
 import { Button } from "@/components/button";
 import { CharCounter } from "@/components/char-counter";
 import {
@@ -31,14 +31,10 @@ function isValidEmail(v: string) {
 type Errors = Record<string, string>;
 
 export function ApplicationForm({
-  instanceId,
   extraFields,
-  siteKey,
   nextStep = null,
 }: {
-  instanceId: string;
   extraFields: ExtraField[];
-  siteKey: string;
   nextStep?: ApplicationMethod | null;
 }) {
   const [form, setForm] = useState({
@@ -57,11 +53,9 @@ export function ApplicationForm({
   const [filesByField, setFilesByField] = useState<Record<string, Attachment[]>>({});
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [fieldErrors, setFieldErrors] = useState<Errors>({});
-  const [submitting, setSubmitting] = useState(false);
+  const [showDemoBlocked, setShowDemoBlocked] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-  const [resetKey, setResetKey] = useState(0);
 
   function set(field: keyof typeof form, value: string) {
     setForm((f) => ({ ...f, [field]: value }));
@@ -101,7 +95,7 @@ export function ApplicationForm({
     return e;
   }
 
-  async function handleSubmit(ev: React.SyntheticEvent<HTMLFormElement>) {
+  function handleSubmit(ev: React.SyntheticEvent<HTMLFormElement>) {
     ev.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length > 0) {
@@ -112,37 +106,11 @@ export function ApplicationForm({
       return;
     }
     setFieldErrors({});
-    setSubmitting(true);
-    setError(null);
-    try {
-      const fieldFiles = Object.entries(filesByField).flatMap(([fieldId, files]) =>
-        files.map((f) => ({ ...f, fieldId })),
-      );
-      const res = await fetch("/api/applications", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          instanceId,
-          ...form,
-          address: form.address || undefined,
-          postalCode: form.postalCode || undefined,
-          city: form.city || undefined,
-          priorEducation: form.priorEducation || undefined,
-          motivation: form.motivation || undefined,
-          extraAnswers: extra,
-          attachments: [...attachments, ...fieldFiles],
-          turnstileToken,
-        }),
-      });
-      if (!res.ok) throw new Error();
-      setSubmitted(true);
-    } catch {
-      setError("Something went wrong. Try again or contact us directly.");
-      setResetKey((k) => k + 1);
-      setTurnstileToken(null);
-    } finally {
-      setSubmitting(false);
-    }
+
+    // Portfolio demo: the application is never submitted or stored. The form
+    // above still validates so the feature can be demonstrated, but POST
+    // /api/applications is blocked by demoLockCheck() regardless of this.
+    setShowDemoBlocked(true);
   }
 
   if (submitted) {
@@ -164,8 +132,8 @@ export function ApplicationForm({
       <div className="rounded-lg border border-brand-green-dark/40 bg-brand-green-dark/10 p-6 text-center space-y-4">
         <p className="text-lg font-semibold text-gray-900">Thanks for your application!</p>
         <p className="text-sm text-gray-600">
-          We&apos;ve sent a confirmation to your email. You&apos;re not admitted
-          until you&apos;ve heard back from us.
+          On a live site this is where the confirmation would appear, and a copy
+          would be emailed to you. In this demo nothing was sent or stored.
         </p>
         {nextStep && nextStepHref && nextStepLabel && (
           <div className="mt-4 rounded-lg border border-brand-green-dark/30 bg-white p-4">
@@ -413,23 +381,31 @@ export function ApplicationForm({
 
       <AttachmentUpload value={attachments} onChange={setAttachments} />
 
-      {siteKey && (
-        <TurnstileWidget
-          siteKey={siteKey}
-          onToken={setTurnstileToken}
-          resetKey={resetKey}
-        />
-      )}
-
       <p className="text-sm text-gray-600">
         You&apos;re not admitted until you&apos;ve heard back from us.
       </p>
 
       <DemoEmailNotice />
 
-      <Button type="submit" disabled={submitting}>
-        {submitting ? "Sending…" : "Submit application"}
-      </Button>
+      <Button type="submit">Submit application</Button>
+
+      {showDemoBlocked && (
+        <DemoBlockedModal
+          title="Nothing was submitted"
+          onClose={() => {
+            setShowDemoBlocked(false);
+            setSubmitted(true);
+          }}
+        >
+          <p>
+            This is a portfolio demo. Course applications are never sent or stored
+            here — what you typed, including the identity number, was discarded
+            rather than saved, and no email went anywhere. Attachments are refused
+            by the server too, so nothing you picked was kept either.
+          </p>
+          <p>Close this to see what the confirmation would look like.</p>
+        </DemoBlockedModal>
+      )}
     </form>
   );
 }

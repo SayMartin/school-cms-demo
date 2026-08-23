@@ -1,13 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { authClient } from "@/lib/auth/auth-client";
 import { ImageUpload } from "@/components/image-upload";
 import { RichTextContent } from "@/components/rich-text-content";
 import { AccordionBlock } from "@/components/accordion-block";
 import { Slideshow } from "@/components/slideshow";
-import { TurnstileWidget } from "@/components/turnstile-widget";
 import { DemoEmailNotice } from "@/components/demo-email-notice";
+import { DemoBlockedModal } from "@/components/demo-blocked-modal";
 import { Button } from "@/components/button";
 import { CharCounter } from "@/components/char-counter";
 import { YoutubeBlockView } from "@/components/youtube-block-view";
@@ -115,28 +114,19 @@ function Required() {
   return <span className="ml-0.5 text-red-500">*</span>;
 }
 
-export function FelanmalanClient({ siteKey }: { siteKey: string }) {
+export function FelanmalanClient() {
   const [blocks, setBlocks] = useState<ContentBlock[]>([]);
   const [heading, setHeading] = useState("");
   const [headingVisible, setHeadingVisible] = useState(true);
   const [headingColor, setHeadingColor] = useState<string | undefined>(
     undefined,
   );
-  const [userId, setUserId] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [serverError, setServerError] = useState<string | null>(null);
+  const [showDemoBlocked, setShowDemoBlocked] = useState(false);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [errors, setErrors] = useState<FormErrors>({});
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(
-    siteKey ? null : "bypass",
-  );
-  const [resetKey, setResetKey] = useState(0);
 
   useEffect(() => {
-    authClient.getSession().then((result) => {
-      setUserId(result.data?.user.id ?? null);
-    });
     fetch("/api/report-issue/content")
       .then(
         (r) =>
@@ -165,29 +155,12 @@ export function FelanmalanClient({ siteKey }: { siteKey: string }) {
       setErrors(errs);
       return;
     }
-    if (!turnstileToken) {
-      setServerError("Complete the verification above before submitting.");
-      return;
-    }
     setErrors({});
-    setSaving(true);
-    setServerError(null);
-    try {
-      const res = await fetch("/api/report-issue", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, userId, turnstileToken }),
-      });
-      if (!res.ok) throw new Error(await res.text());
-      setSubmitted(true);
-      setForm(EMPTY_FORM);
-    } catch {
-      setServerError("Something went wrong. Please try again or contact the front desk.");
-      setResetKey((k) => k + 1);
-      setTurnstileToken(null);
-    } finally {
-      setSaving(false);
-    }
+
+    // Portfolio demo: the report is never submitted or stored. The form above
+    // still validates so the workflow can be demonstrated, but POST
+    // /api/report-issue is blocked by demoLockCheck() regardless of this.
+    setShowDemoBlocked(true);
   }
 
   function fieldProps(key: keyof FormState) {
@@ -268,7 +241,9 @@ export function FelanmalanClient({ siteKey }: { siteKey: string }) {
         <div className="mt-8 rounded-lg border border-brand-green-dark/30 bg-brand-green-light px-6 py-8 text-center">
           <p className="text-xl font-semibold text-gray-900">Thank you!</p>
           <p className="mt-2 text-gray-700">
-            Your report has been submitted. We&apos;ll get back to you.
+            On a live site this is where the confirmation would appear, and the
+            report would reach the facilities team. In this demo nothing was sent
+            or stored.
           </p>
           <Button
             type="button"
@@ -281,12 +256,6 @@ export function FelanmalanClient({ siteKey }: { siteKey: string }) {
         </div>
       ) : (
         <>
-          {serverError && (
-            <p className="mt-4 rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">
-              {serverError}
-            </p>
-          )}
-
           <form onSubmit={handleSubmit} noValidate className="mt-8 space-y-6">
             {/* Sender */}
             <fieldset className="space-y-4 rounded-lg border border-gray-200">
@@ -525,14 +494,6 @@ export function FelanmalanClient({ siteKey }: { siteKey: string }) {
               showLibraryPicker={false}
             />
 
-            {siteKey && (
-              <TurnstileWidget
-                siteKey={siteKey}
-                onToken={setTurnstileToken}
-                resetKey={resetKey}
-              />
-            )}
-
             <p className="text-sm text-gray-600">
               Fields marked with <span className="text-red-500">*</span> are
               required.
@@ -540,9 +501,25 @@ export function FelanmalanClient({ siteKey }: { siteKey: string }) {
 
             <DemoEmailNotice />
 
-            <Button type="submit" disabled={saving || !turnstileToken}>
-              {saving ? "Submitting…" : "Submit report"}
-            </Button>
+            <Button type="submit">Submit report</Button>
+
+            {showDemoBlocked && (
+              <DemoBlockedModal
+                title="Nothing was submitted"
+                onClose={() => {
+                  setShowDemoBlocked(false);
+                  setSubmitted(true);
+                  setForm(EMPTY_FORM);
+                }}
+              >
+                <p>
+                  This is a portfolio demo. Maintenance reports are never sent or
+                  stored here — what you typed was discarded rather than saved, and
+                  no email went anywhere.
+                </p>
+                <p>Close this to see what the confirmation would look like.</p>
+              </DemoBlockedModal>
+            )}
           </form>
         </>
       )}

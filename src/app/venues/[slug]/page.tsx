@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
-import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getDb } from "@/lib/db/client";
 import { venue } from "@/lib/db/schema";
 import { mediaUrl } from "@/lib/r2/client";
@@ -27,14 +26,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function VenueDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const { env } = getCloudflareContext();
   const db = getDb();
 
   const [v] = await db.select().from(venue).where(eq(venue.slug, slug)).limit(1);
   if (!v || !v.published) notFound();
 
   const blocks = parseContentBlocks(v.blocks);
-  const siteKey = env.TURNSTILE_SITE_KEY;
 
   return (
     <div>
@@ -107,7 +104,6 @@ export default async function VenueDetailPage({ params }: { params: Promise<{ sl
             <VenueInquiryForm
               venues={[{ slug: v.slug, name: v.name }]}
               preselectedVenue={v.name}
-              siteKey={siteKey}
             />
           </div>
         </section>

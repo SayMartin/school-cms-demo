@@ -24,8 +24,12 @@ export function YoutubeBlockView({ block }: { block: YoutubeBlock }) {
         <h2 className="mb-4" style={{ color: block.headingColor ?? "#111827" }}>{block.heading}</h2>
       )}
       <div className="aspect-video w-full overflow-hidden shadow-sm">
+        {/* youtube-nocookie.com, not youtube.com: the standard embed sets
+            tracking cookies on the visitor before they click anything, which
+            would require a consent banner. The no-cookie host defers that
+            until playback starts. */}
         <iframe
-          src={`https://www.youtube.com/embed/${videoId}`}
+          src={`https://www.youtube-nocookie.com/embed/${videoId}`}
           title={block.heading || "YouTube-video"}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen

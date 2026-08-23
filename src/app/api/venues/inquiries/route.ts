@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { desc } from "drizzle-orm";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { requireStudioAccess } from "@/lib/auth/guards";
+import { demoLockCheck } from "@/lib/auth/demo-lock";
 import { getDb } from "@/lib/db/client";
 import { venueInquiry } from "@/lib/db/schema";
 import { sendEmail } from "@/lib/email/client";
@@ -45,7 +46,13 @@ export async function GET(req: Request) {
   }
 }
 
+// POST — submit a venue inquiry. Disabled in the public demo: the demo Studio
+// password is published on /sign-in, so a name, email and phone stored here
+// would be readable by any visitor. The form still renders and validates.
 export async function POST(req: Request) {
+  const locked = demoLockCheck();
+  if (locked) return locked;
+
   try {
     const body = await req.json() as {
       name: string;
@@ -64,15 +71,18 @@ export async function POST(req: Request) {
     };
 
     const { env, ctx } = getCloudflareContext();
-    // Turnstile verification is temporarily optional — enable before go-live by
-    // requiring a valid token (remove `&& body.turnstileToken`).
-    if (env.TURNSTILE_SECRET_KEY && body.turnstileToken) {
+    // Fails closed: a missing token is a failed verification, not a skipped one.
+    // (Previously `&& body.turnstileToken` meant any client that simply omitted
+    // the token skipped the check entirely, which protected nothing.)
+    if (env.TURNSTILE_SECRET_KEY) {
       const ip = req.headers.get("CF-Connecting-IP");
-      const valid = await verifyTurnstileToken(
-        body.turnstileToken,
-        env.TURNSTILE_SECRET_KEY,
-        ip,
-      );
+      const valid = body.turnstileToken
+        ? await verifyTurnstileToken(
+            body.turnstileToken,
+            env.TURNSTILE_SECRET_KEY,
+            ip,
+          )
+        : false;
       if (!valid) {
         return NextResponse.json(
           { error: "Verification failed" },

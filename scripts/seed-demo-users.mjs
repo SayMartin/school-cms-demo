@@ -6,6 +6,13 @@
 //
 // Run against local preview: npm run seed:demo-users:local (requires npm run preview in another terminal)
 // Run against deployed demo: npm run seed:demo-users:remote -- --base-url https://<your-demo>.workers.dev
+//
+// NOTE: /api/auth/sign-up/email is blocked by the auth route whenever DEMO_LOCKDOWN is
+// anything other than "false" (the default), so seeding a *deployed* demo means
+// temporarily setting "DEMO_LOCKDOWN": "false" in wrangler.jsonc, deploying,
+// running this script, then setting it back and deploying again. That is
+// deliberate: the endpoint creates real User rows with password hashes, and a
+// public demo should not leave it open just to make re-seeding convenient.
 
 import { execSync } from "child_process";
 

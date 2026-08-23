@@ -15,8 +15,9 @@ interface CloudflareEnv {
   // Environment identifier — "dev" | "prod" (set in wrangler.jsonc per env)
   APP_ENV: string | undefined;
 
-  // Blocks deletes and account approve/reject/archive/restore/change-role
-  // at the API layer. "true" (default) | "false" — see src/lib/auth/demo-lock.ts
+  // Blocks destructive admin actions, public sign-up, and course-application
+  // submission/upload at the API layer. "true" (default) | "false".
+  // See src/lib/auth/demo-lock.ts for the full list of guarded endpoints.
   DEMO_LOCKDOWN: string | undefined;
 
   // Better Auth runtime configuration

@@ -4,6 +4,7 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { requireFacilitiesAccess } from "@/lib/auth/guards";
 import { getDb } from "@/lib/db/client";
 import { errorReport, errorReportComment } from "@/lib/db/schema";
+import { demoLockCheck } from "@/lib/auth/demo-lock";
 import { sendEmail } from "@/lib/email/client";
 import { recipientEmail } from "@/lib/felanmalan-recipients";
 import { TEXT_LIMITS } from "@/lib/text-limits";
@@ -66,7 +67,13 @@ export async function GET(req: Request) {
   }
 }
 
+// POST — submit a maintenance report. Disabled in the public demo for the same
+// reason as venue inquiries: the reporter's name, email and phone would land in
+// a database anyone can read with the published demo login.
 export async function POST(req: Request) {
+  const locked = demoLockCheck();
+  if (locked) return locked;
+
   try {
     const body = (await req.json()) as {
       title: string;

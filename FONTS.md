@@ -9,6 +9,14 @@ Audience: students, the public, and aesthetically-minded staff (art, form, desig
 
 Geist loads via `next/font/google` (already in the project). The others load from Google Fonts.
 
+> **Privacy tradeoff (unresolved).** The others are fetched by the *visitor's*
+> browser from `fonts.googleapis.com`/`fonts.gstatic.com`, so Google receives every
+> visitor's IP address and user agent on every page load. This is disclosed in
+> `/privacy` as a recipient. Self-hosting the woff2 files would remove that request
+> entirely, but it also removes the point of the picker — an editor choosing any
+> Google Font at runtime. Revisit if the demo ever gets real visitors whose data
+> matters, or narrow the list to a self-hosted handful.
+
 ### Current font (selectable)
 
 | Font | Loading | Character | Best for |

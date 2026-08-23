@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { desc, eq } from "drizzle-orm";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { requireStudioAccess } from "@/lib/auth/guards";
+import { demoLockCheck } from "@/lib/auth/demo-lock";
 import { getDb } from "@/lib/db/client";
 import { courseApplication, courseInstance, course } from "@/lib/db/schema";
 import { sendEmail } from "@/lib/email/client";
@@ -62,7 +63,14 @@ export async function GET(req: Request) {
 }
 
 // POST — submit an application. Public.
+// POST — submit an application. Disabled in the public demo: the form collects a
+// personal identity number, and the demo Studio password is published on /sign-in,
+// so anything stored here would be readable by anyone. The form still renders and
+// validates; it just never reaches this endpoint.
 export async function POST(req: Request) {
+  const locked = demoLockCheck();
+  if (locked) return locked;
+
   try {
     const body = (await req.json()) as {
       instanceId: string;

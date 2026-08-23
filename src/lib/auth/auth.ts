@@ -1,4 +1,5 @@
 import { betterAuth } from "better-auth/minimal";
+import { lt } from "drizzle-orm";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { sendEmail } from "@/lib/email/client";
@@ -44,6 +45,25 @@ export function createAuth(db: Db) {
     session: {
       expiresIn: 60 * 60 * 24 * 30,
       updateAge: 60 * 60 * 24,
+    },
+
+    databaseHooks: {
+      session: {
+        create: {
+          // Retention, without a cron. Cloudflare cron triggers need a `scheduled`
+          // handler, which OpenNext owns, so expired rows are swept on the one
+          // event that is both rare and already writing to these tables: a sign-in.
+          // Session rows carry a userAgent, and Verification rows carry live
+          // password-reset tokens — neither has any reason to outlive its expiry.
+          after: async () => {
+            const now = new Date();
+            await db.delete(schema.session).where(lt(schema.session.expiresAt, now));
+            await db
+              .delete(schema.verification)
+              .where(lt(schema.verification.expiresAt, now));
+          },
+        },
+      },
     },
 
     user: {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { TurnstileWidget } from "@/components/turnstile-widget";
+import { DemoBlockedModal } from "@/components/demo-blocked-modal";
 import { DemoEmailNotice } from "@/components/demo-email-notice";
 import { Button } from "@/components/button";
 import { CharCounter } from "@/components/char-counter";
@@ -85,11 +85,9 @@ const EVENT_TYPE_OPTIONS = [
 export function VenueInquiryForm({
   venues,
   preselectedVenue,
-  siteKey,
 }: {
   venues: VenueOption[];
   preselectedVenue?: string;
-  siteKey: string;
 }) {
   const [form, setForm] = useState({
     name: "",
@@ -109,11 +107,9 @@ export function VenueInquiryForm({
     preselectedVenue ? [preselectedVenue] : []
   );
   const [fieldErrors, setFieldErrors] = useState<TextFormErrors>({});
-  const [submitting, setSubmitting] = useState(false);
+  const [showDemoBlocked, setShowDemoBlocked] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-  const [resetKey, setResetKey] = useState(0);
 
   function toggleVenue(name: string) {
     setSelectedVenues((prev) =>
@@ -135,58 +131,11 @@ export function VenueInquiryForm({
       return;
     }
     setFieldErrors({});
-    setSubmitting(true);
-    setError(null);
-    try {
-      const fmt = (iso: string) =>
-        new Date(iso).toLocaleString("en-US", {
-          timeZone: "Europe/Stockholm",
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-      const requestedDate = `${fmt(form.startDatetime)} – ${fmt(form.endDatetime)}`;
-      const alternativeDate = form.alternativeDate
-        ? new Date(form.alternativeDate).toLocaleString("en-US", {
-            timeZone: "Europe/Stockholm",
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-          })
-        : undefined;
 
-      const res = await fetch("/api/venues/inquiries", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: form.name,
-          organization: form.organization,
-          email: form.email,
-          phone: form.phone,
-          eventType: form.eventType,
-          requestedDate,
-          alternativeDate,
-          numberOfPeople: parseInt(form.numberOfPeople, 10),
-          venues: selectedVenues,
-          equipmentNeeded: form.equipmentNeeded || undefined,
-          meals: form.meals || undefined,
-          notes: form.notes || undefined,
-          turnstileToken,
-        }),
-      });
-      if (!res.ok) throw new Error();
-      setSubmitted(true);
-    } catch {
-      setError("Something went wrong. Try again or contact us directly.");
-      setResetKey((k) => k + 1);
-      setTurnstileToken(null);
-    } finally {
-      setSubmitting(false);
-    }
+    // Portfolio demo: the inquiry is never submitted or stored. The form above
+    // still validates so the workflow can be demonstrated, but POST
+    // /api/venues/inquiries is blocked by demoLockCheck() regardless of this.
+    setShowDemoBlocked(true);
   }
 
   if (submitted) {
@@ -194,7 +143,9 @@ export function VenueInquiryForm({
       <div className="rounded-lg border border-brand-green-dark/40 bg-brand-green-dark/10 p-6 text-center">
         <p className="text-lg font-semibold text-gray-900">Thank you for your inquiry!</p>
         <p className="mt-2 text-sm text-gray-600">
-          We&apos;ll get back to you with a quote. Nothing is booked until you receive a confirmation from us.
+          On a live site this is where the confirmation would appear, and the
+          booking team would reply with a quote. In this demo nothing was sent or
+          stored.
         </p>
       </div>
     );
@@ -363,10 +314,6 @@ export function VenueInquiryForm({
         {fieldErrors.notes && <p className="mt-1 text-sm text-red-600">{fieldErrors.notes}</p>}
       </div>
 
-      {/* Verification is temporarily optional — only shown if a siteKey is configured. */}
-      {siteKey && (
-        <TurnstileWidget siteKey={siteKey} onToken={setTurnstileToken} resetKey={resetKey} />
-      )}
 
       <p className="text-sm text-gray-600">
         Nothing is booked until you receive a confirmation from us.
@@ -374,9 +321,24 @@ export function VenueInquiryForm({
 
       <DemoEmailNotice />
 
-      <Button type="submit" disabled={submitting}>
-        {submitting ? "Sending…" : "Send Inquiry"}
-      </Button>
+      <Button type="submit">Send Inquiry</Button>
+
+      {showDemoBlocked && (
+        <DemoBlockedModal
+          title="Nothing was submitted"
+          onClose={() => {
+            setShowDemoBlocked(false);
+            setSubmitted(true);
+          }}
+        >
+          <p>
+            This is a portfolio demo. Venue inquiries are never sent or stored here
+            — what you typed was discarded rather than saved, and no email went
+            anywhere.
+          </p>
+          <p>Close this to see what the confirmation would look like.</p>
+        </DemoBlockedModal>
+      )}
     </form>
   );
 }

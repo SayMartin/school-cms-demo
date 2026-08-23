@@ -1,12 +1,16 @@
 import { NextResponse } from "next/server";
+import { demoLockCheck } from "@/lib/auth/demo-lock";
 import { getStorage } from "@/lib/r2/client";
 
 export const dynamic = "force-dynamic";
 
-// Public upload for course application attachments (applicants aren't signed in).
-// Protected by a type allowlist + size limits. The final application is
-// Turnstile-protected; here the files are stored under "ansokningar/" and linked to
-// the application only at POST /api/applications.
+// Upload endpoint for course application attachments (applicants aren't signed in).
+// Disabled in the public demo along with the application itself — an
+// unauthenticated write into R2 is the one public path that could store a
+// stranger's files, so it is blocked at the API layer, not just in the UI.
+// Outside the demo (DEMO_LOCKDOWN="false") a type allowlist + size limits apply,
+// files land under "ansokningar/", and they are linked to the application only
+// at POST /api/applications.
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10 MB
 const MAX_VIDEO_SIZE = 200 * 1024 * 1024; // 200 MB
 const MAX_DOC_SIZE = 25 * 1024 * 1024; // 25 MB
@@ -39,6 +43,9 @@ function maxSizeFor(type: string): number {
 }
 
 export async function POST(req: Request) {
+  const locked = demoLockCheck();
+  if (locked) return locked;
+
   const storage = getStorage();
   if (!storage) {
     return NextResponse.json(

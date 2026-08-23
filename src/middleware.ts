@@ -18,7 +18,7 @@ import {
 //   /education-programs/*   Course pages
 //   /news/*                 News pages
 //   /about, /summer-courses, /venues, /boarding, /restaurant, /contact
-//   /api/auth/*             Auth endpoints
+//   /api/auth/*             Auth endpoints (sign-up is blocked in the route itself)
 //   /create-account         Account application (public)
 //   /account-pending        Pending/inactive account info page (public)
 //   /forgot-password        Forgot password (public)

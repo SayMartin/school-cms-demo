@@ -1,41 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { createPortal } from "react-dom";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
-import { Button } from "@/components/button";
 import { AuthBrand } from "@/components/auth-brand";
 import { CharCounter } from "@/components/char-counter";
+import { DemoBlockedModal } from "@/components/demo-blocked-modal";
 import { TEXT_LIMITS } from "@/lib/text-limits";
-
-function DemoRegistrationClosedModal({ onClose }: { onClose: () => void }) {
-  return createPortal(
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
-      onClick={onClose}
-    >
-      <div
-        className="mx-4 w-full max-w-sm rounded-xl bg-white p-6 shadow-xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h2 className="text-lg font-semibold text-gray-900">
-          Account applications are closed
-        </h2>
-        <p className="mt-2 text-sm text-gray-700">
-          This is a portfolio demo — new accounts can&apos;t be created here.
-          Use one of the demo accounts on the sign-in page instead.
-        </p>
-        <div className="mt-5 flex justify-end">
-          <Button variant="outline" size="sm" onClick={onClose}>
-            Close
-          </Button>
-        </div>
-      </div>
-    </div>,
-    document.body,
-  );
-}
 
 function PasswordInput({
   id,
@@ -238,9 +209,16 @@ export default function CreateAccountPage() {
         </form>
 
         {showRegistrationClosed && (
-          <DemoRegistrationClosedModal
+          <DemoBlockedModal
+            title="Account applications are closed"
             onClose={() => setShowRegistrationClosed(false)}
-          />
+          >
+            <p>
+              This is a portfolio demo — new accounts can&apos;t be created here, and
+              nothing you typed above was sent or stored. Use one of the demo accounts
+              on the sign-in page instead.
+            </p>
+          </DemoBlockedModal>
         )}
 
         <p className="mt-4 mb-4 text-sm text-gray-600">

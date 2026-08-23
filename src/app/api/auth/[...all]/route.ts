@@ -1,4 +1,5 @@
 import { createAuth } from "@/lib/auth/auth";
+import { demoLockCheck } from "@/lib/auth/demo-lock";
 import { getDb } from "@/lib/db/client";
 
 export const dynamic = "force-dynamic";
@@ -16,15 +17,16 @@ export const dynamic = "force-dynamic";
 // ---------------------------------------------------------------------------
 
 async function handler(request: Request) {
-  // Portfolio demo: public registration is disabled. The UI already hides
-  // the sign-up form behind an info overlay, but block it server-side too
-  // so the endpoint can't be used directly.
+  // Portfolio demo: public registration is disabled. The UI already hides the
+  // sign-up form behind an info overlay; this blocks the endpoint itself so it
+  // can't be called directly. Gated on DEMO_LOCKDOWN (which fails closed) rather
+  // than hardcoded, because scripts/seed-demo-users.mjs creates the demo accounts
+  // through this very endpoint — with the block unconditional, re-seeding needed
+  // a code edit.
   const url = new URL(request.url);
   if (request.method === "POST" && url.pathname.endsWith("/sign-up/email")) {
-    return new Response(
-      JSON.stringify({ message: "Account registration is disabled in this demo." }),
-      { status: 403, headers: { "Content-Type": "application/json" } },
-    );
+    const locked = demoLockCheck();
+    if (locked) return locked;
   }
 
   const db = getDb();

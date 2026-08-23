@@ -159,6 +159,7 @@ src/
     boarding/                    # Boarding school
     news/                        # News list + detail pages
     contact/                     # Contact page
+    privacy/                     # Privacy policy — static, deliberately not D1-backed
     sign-in/                     # Sign-in page
     create-account/              # Sign-up — new accounts get status "pending"
     account-pending/             # Account pending approval page
@@ -413,11 +414,51 @@ See [DESIGN.md](DESIGN.md) for the full visual design spec (colors, typography, 
 9. **Auth via Better Auth** — do not implement custom auth logic. Use Better Auth's
    session and role utilities.
 
-10. **Swedish content** — UI strings shown to website visitors should be in Swedish.
-    Code, comments, and variable names stay in English.
+10. **English content** — all user-facing UI strings are English, per the
+    Conventions section above. Only the fictional school's own in-world identity
+    (Swedish staff and building names) stays Swedish. (This rule previously said
+    the opposite; it predated the structural rename and contradicted the site.)
 
 11. **No unnecessary abstractions** — do not add helpers, wrappers, or utilities for
     one-off operations. Three similar lines of code is better than a premature abstraction.
+
+## Privacy & Personal Data
+
+This is a public demo whose Studio password is printed on `/sign-in`, so anything
+stored in D1 is readable by anyone. The rule that follows from that: **a public
+endpoint must not write a stranger's personal data.** `DEMO_LOCKDOWN` (default
+`"true"`, fails closed) enforces it at the API layer via `demoLockCheck()` —
+see `src/lib/auth/demo-lock.ts` for the guarded endpoints.
+
+- **Every public form is inert.** Course applications (`/apply/[code]`), venue
+  inquiries (`/venues/[slug]`) and maintenance reports (`/about/report-issue`) all
+  validate, show the confirmation screen, and discard. `POST /api/applications`,
+  `/api/applications/upload`, `/api/venues/inquiries` and `/api/report-issue` all
+  refuse via `demoLockCheck()`, so the client behaviour is an explanation, not the
+  protection. Don't "re-enable one for testing" against the public demo.
+- **Sign-up is blocked in `src/app/api/auth/[...all]/route.ts`**, not via Better
+  Auth's `disableSignUp`. The block was previously unconditional; it is now gated
+  on `DEMO_LOCKDOWN` so that flipping it to `"false"` is enough to re-seed demo
+  accounts (`scripts/seed-demo-users.mjs` signs them up through that endpoint),
+  which otherwise required editing the route by hand.
+- **Turnstile is currently dormant.** Its server-side checks survive in the three
+  form routes and now fail closed (a missing token is a failed check, not a skipped
+  one — they previously skipped verification whenever the client simply omitted the
+  token). But no form submits any more, so `TurnstileWidget` is rendered nowhere and
+  nothing reaches `verifyTurnstileToken`. The component, `src/lib/turnstile.ts` and
+  the keys in `wrangler.jsonc` are kept as the path a real (non-demo) deployment
+  would use; re-enabling any form means rendering the widget again. The keys are
+  Cloudflare's published test pair, which always passes.
+- **Retention** is swept on sign-in via `databaseHooks.session.create.after` in
+  `src/lib/auth/auth.ts`: expired `Session` and `Verification` rows are deleted.
+  Cloudflare cron triggers would need a `scheduled` handler, which OpenNext owns.
+- **Third parties that see a visitor:** Google Fonts (IP + user agent, on every
+  page load — the one unresolved item, see FONTS.md), YouTube via
+  `youtube-nocookie.com` (only on play), Cloudflare (hosting). Instagram is
+  fetched server-side and sees nothing. Adding another one means updating
+  `/privacy` in the same change.
+- **`/privacy` is static code, not a D1 content block**, precisely so demo
+  credentials can't rewrite it. Bump `LAST_UPDATED` when the substance changes.
 
 ## Environment Variables
 
