@@ -141,7 +141,7 @@ src/
       student-support/         # Student support (curative support)
       student-rights/          # Student rights
       term-dates/              # Term and holiday dates
-      report-issue/            # Maintenance report — form + Turnstile
+      report-issue/            # Maintenance report — form (inert in the demo)
     about-redirect/            # Redirect → /about
     distance-education/        # [slug] detail + samtliga-naturliv (static overview)
     summer-courses/            # List page + course/[slug] detail + summer-courses-practical-info
@@ -176,13 +176,13 @@ src/
     api/news/                     # News CRUD API routes
     api/courses/                  # Course CRUD API (unified — all course types); [slug]: get/update/delete
     api/course-instances/         # CourseInstance CRUD (Studio-gated; GET public, ?open=true, ?courseId=)
-    api/applications/             # POST public (course application + Turnstile + email to ANSOKAN_EMAIL + confirmation copy); GET/[id] PATCH studio-gated; upload/ public attachment upload
+    api/applications/             # POST + upload/ BLOCKED by demoLockCheck (would be public: application + Turnstile + email to ANSOKAN_EMAIL + confirmation copy); GET/[id] PATCH studio-gated
     api/restaurant/                # Chef portal API (admin + restaurant): dishes, menus, content
-    api/venues/                    # Venue CRUD (incl. blocks) + inquiries (POST public + Turnstile + email to MOTESPLATS_EMAIL + confirmation copy); inquiries/[id]/comments studio-gated
+    api/venues/                    # Venue CRUD (incl. blocks) + inquiries (POST BLOCKED by demoLockCheck; would be public + Turnstile + email to MOTESPLATS_EMAIL + confirmation copy); inquiries/[id]/comments studio-gated
     api/venues-content/             # VenuesContent — blocks JSON (intro section for /venues)
     api/profiles/                   # Profile CRUD (Studio-gated, except GET)
     api/departments/                 # Department CRUD (Studio-gated, except GET)
-    api/report-issue/                # POST public (+Turnstile + email to incident/facilities + confirmation copy); GET (cases with embedded comments)/PUT/comments facilities-gated (admin+facilities); content/ studio-gated
+    api/report-issue/                # POST BLOCKED by demoLockCheck (would be public + Turnstile + email to incident/facilities + confirmation copy); GET (cases with embedded comments)/PUT/comments facilities-gated (admin+facilities); content/ studio-gated
     api/participant-stories/          # ParticipantStory CRUD
     api/nav-hub/[id]/                 # NavHubContent GET + PUT
     api/typography/                    # TypographySettings GET (public) + PUT (lock: admin)
@@ -229,7 +229,9 @@ src/
                               # HistoriaTimeline, CourseDetailView, ParticipantStoryCard,
                               # SchoolSoftPrescreen, BrandColorPicker, SchoolRainbow, SchoolDisco,
                               # SummerCoursesNav, StudioSaveBar, StudioSectionCard, StudioSectionGrid,
-                              # TurnstileWidget)
+                              # TurnstileWidget (currently rendered nowhere — see
+                              # Privacy & Personal Data), DemoBlockedModal,
+                              # DemoEmailNotice)
   lib/
     blocks.ts                 # Block type definitions: SectionBlock, AccordionSectionBlock, SlideshowBlock, ProfilesBlock, YoutubeBlock, VideoBlock, InstagramBlock + hub blocks: NavGroupBlock (`type: "nav-group"`), CourseGroupBlock (`type: "course-group"`)
     parse-blocks.ts           # Safe JSON → block-array parsing (parseBlocks, parseHubBlocks)
@@ -482,8 +484,8 @@ All env vars are declared in `src/env.d.ts` (Cloudflare Workers bindings):
 | `ADMIN_EMAIL` | Fallback recipient when the category-specific vars are unset |
 | `MOTESPLATS_EMAIL` | Venue-inquiry recipients (comma-separated; falls back to `ADMIN_EMAIL`) |
 | `ANSOKAN_EMAIL` | Course-application recipient — new applications from `/apply/[code]` (falls back to `ADMIN_EMAIL`) |
-| `TURNSTILE_SITE_KEY` | Cloudflare Turnstile — public key, passed to client widget |
-| `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile — secret key, used for server-side validation |
+| `TURNSTILE_SITE_KEY` | Cloudflare Turnstile — public key. Unused today: no form renders the widget (see Privacy & Personal Data) |
+| `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile — secret key for server-side validation. Kept for a non-demo deployment; nothing reaches it here |
 | `INSTAGRAM_ACCESS_TOKEN` | Instagram Graph API — long-lived token (expires after 60 days, refresh manually) |
 
 > Note: `FASTIGHET_EMAIL`, `MOTESPLATS_EMAIL`, and `ANSOKAN_EMAIL` keep their original Swedish names — the structural rename covered route segments, DB tables/columns, and role names, not these specific env var names.

@@ -229,6 +229,14 @@ type ExtraField = {
 - The `files` type renders `AttachmentUpload` inside the question block on `/apply/[code]`. Attachments are tagged with `fieldId` and merged with global `attachments` on submit.
 - In the Studio applications view, field IDs are mapped to labels via the instance's `extraFields`.
 
+> **The application form does not submit in this demo.** `/apply/[code]` validates,
+> shows the confirmation screen, and discards; `POST /api/applications` and
+> `/api/applications/upload` refuse via `demoLockCheck()`. The form collects a
+> personal identity number, and the demo Studio password is public — see *Privacy &
+> Personal Data* in `AGENTS.md`. Everything described above is the data model as
+> built, not a live write path here. The applications already visible in Studio are
+> seeded fiction from `scripts/seed-demo-data.sql`.
+
 ### SchoolSoftPrescreen
 
 If an instance has the SchoolSoft method, **no** form method, and at least one required extraField (type text/textarea/select), `CourseDetailView` renders a `SchoolSoftPrescreen` component instead of a direct link. Answers are **not** stored in the DB — it's a purely client-side gate. For DB-stored answers: use `form + schoolsoft` in sequence mode.

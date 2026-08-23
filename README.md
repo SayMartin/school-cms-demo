@@ -147,7 +147,7 @@ src/
       nav-hub/[id]/                  # Hub page editors
       style-templates/                 # Typography settings (fonts per H1/H2/H3/body)
       .../                              # One editor per content page (see AGENTS.md for full list)
-  components/                 # Shared UI (Nav, RadialNav, Footer, Breadcrumbs, NewsCard, KursCard, NavHubCard, VenueView, ProfileCard, HeroVideo, ImageUpload, RichTextEditor, RichTextContent, AccordionButton, AccordionBlock, BlockCard, BlockToolbar, block editors/views, HubBlocksView, KursBlocksView, InstagramFeed, HistoriaTimeline, CourseDetailView, ParticipantStoryCard, StudioSaveBar, StudioSectionCard, StudioSectionGrid, TurnstileWidget)
+  components/                 # Shared UI (Nav, RadialNav, Footer, Breadcrumbs, NewsCard, KursCard, NavHubCard, VenueView, ProfileCard, HeroVideo, ImageUpload, RichTextEditor, RichTextContent, AccordionButton, AccordionBlock, BlockCard, BlockToolbar, block editors/views, HubBlocksView, KursBlocksView, InstagramFeed, HistoriaTimeline, CourseDetailView, ParticipantStoryCard, StudioSaveBar, StudioSectionCard, StudioSectionGrid, TurnstileWidget, DemoBlockedModal)
   lib/
     blocks.ts                 # Block type definitions: SectionBlock, AccordionSectionBlock, SlideshowBlock, ProfilesBlock, YoutubeBlock, VideoBlock, InstagramBlock, NavGroupBlock, CourseGroupBlock
     auth/                     # Better Auth server + client config, roles, guards
@@ -175,7 +175,7 @@ drizzle/migrations/           # SQL migration files (applied via wrangler d1 mig
 | `News` | School news articles with action links and optional R2 image |
 | `Course` | **Unified course model** — all course types (`program`, `program_track`, `short`, `summer`, `evening`) in one table. Fields include `applicationSectionHeading` (editable heading above the application section — default "Ansökan"). See [COURSES.md](COURSES.md). |
 | `CourseInstance` | A specific intake of a Course — year, periodType, week, dates, spots, `applicationMethods` (open/mode/methods JSON), `applicationBlocks`, `extraFields` (custom form questions). One Course can have many CourseInstances. |
-| `CourseApplication` | An application submitted via the built-in form (`/apply/[code]`). Stores fixed fields, `extraAnswers` (JSON), file attachments, and a status (`new`/`reviewing`/`accepted`/`declined`). |
+| `CourseApplication` | An application submitted via the built-in form (`/apply/[code]`). Stores fixed fields, `extraAnswers` (JSON), file attachments, and a status (`new`/`reviewing`/`accepted`/`declined`). *The form is inert in this demo — the rows visible in Studio are seeded fiction.* |
 | `ParticipantStory` | Former student testimonials, matched to courses via `courseName` |
 | `Dish` | Reusable dish library with photos, used in weekly menus |
 | `WeeklyMenu` | Weekly lunch menu container (year + ISO week) |
@@ -239,7 +239,7 @@ Every content page has a studio-editable **page heading** (`heading`, `headingVi
 
 **Navigation** uses `RadialNav` — a circular pie-menu component — on desktop (md+). On mobile it opens a grouped dropdown. The navigation tree (`SCHOOL_NAV_TREE`) is defined in `src/components/RadialNav.example.tsx` and consumed from `src/components/nav.tsx`.
 
-Transactional email (maintenance-report notifications, password resets, account notices) is sent via the Gmail API using a Google Workspace service account — see [EMAIL.md](EMAIL.md). Bot protection on public forms via Cloudflare Turnstile.
+Transactional email (maintenance-report notifications, password resets, account notices) is sent via the Gmail API using a Google Workspace service account — see [EMAIL.md](EMAIL.md). **In this demo nothing is sent and no public form submits**, so neither the mail path nor the Cloudflare Turnstile bot check is reached; both are kept as the implementation a real deployment would use. See [/privacy](https://school-cms-demo.appfinningar.se/privacy).
 
 ---
 

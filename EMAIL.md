@@ -1,5 +1,12 @@
 # Email handling during a DNS migration to Cloudflare
 
+> **This is a production runbook, not a demo procedure.** In this repository no
+> email is ever sent (`sendEmail()` short-circuits whenever `APP_ENV !== "prod"`),
+> and the forms referenced in the test steps below are inert — venue inquiries and
+> maintenance reports are refused by `demoLockCheck()` before any handler runs, so
+> nothing is saved and nothing is mailed. The steps describe what a real
+> deployment would do; they cannot be followed against the demo.
+
 ## Background
 
 The example school today has its domain, DNS, and email hosted at [former web host] (10+ active
@@ -121,6 +128,7 @@ email already works, you mostly just need to confirm point B below.
 > If the recipient addresses are missing, sending falls back to `ADMIN_EMAIL`.
 > If the Gmail secrets are missing, no email is sent (logged as a warning), but the
 > inquiry is still saved and shows up in Studio under the venue inquiries list.
+> (Neither applies in this demo, where the inquiry never reaches the handler.)
 
 ---
 

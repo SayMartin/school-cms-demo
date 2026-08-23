@@ -21,3 +21,8 @@ Read that file before making any changes.
 - Do not use `any` in TypeScript — always type properly.
 - Do not commit `.env` or `.env.local` files.
 - Do not add unnecessary abstractions or helpers for one-off operations.
+- **Do not let a public endpoint write personal data.** The demo Studio password
+  is published on `/sign-in`, so anything in D1 is world-readable. Every public
+  form is inert and every write endpoint behind one is guarded by
+  `demoLockCheck()`. Don't remove a guard, and don't add a public form that
+  persists what a visitor types. See *Privacy & Personal Data* in AGENTS.md.

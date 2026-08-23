@@ -25,6 +25,14 @@ This repository is a sanitized demo clone: its own Cloudflare account, D1
 database, and R2 bucket, fully invented content, mocked outbound email, and no
 `production` environment or CI/CD pipeline.
 
+Because the demo Studio password is published on `/sign-in`, **every public form
+is inert**: course applications, venue inquiries and maintenance reports all
+validate, show their confirmation screen, and discard the data, with the matching
+API routes refusing the request via `demoLockCheck()`. Sign-up is closed the same
+way. The only personal data the demo holds is a session row per signed-in demo
+account. See the *Privacy & Personal Data* section in `AGENTS.md`, and `/privacy`
+for the public statement of it.
+
 ---
 
 ## Tech Stack
@@ -68,7 +76,7 @@ All major public routes, Studio (admin) routes, and API routes are implemented
 and working — see the `src/app/` and `src/app/api/` directory trees in
 `AGENTS.md → Project Structure` for the current, accurate route map. Highlights:
 
-- Public: homepage, `/education-programs` (+ `[slug]`), `/short-courses`, `/summer-courses` (+ `/course/[slug]`), `/evening-courses` (+ `/course/[slug]`), `/mental-health-first-aid`, `/study-motivation-course`, `/distance-education` (+ `[slug]`), `/about` (+ sub-pages), `/news` (+ `[slug]`), `/participant-stories`, `/restaurant`, `/venues` (+ `[slug]`), `/boarding`, `/contact`, `/apply/[code]` (course applications), `/sign-in`, `/create-account`, `/forgot-password` / `/reset-password`, `/403`
+- Public: homepage, `/education-programs` (+ `[slug]`), `/short-courses`, `/summer-courses` (+ `/course/[slug]`), `/evening-courses` (+ `/course/[slug]`), `/mental-health-first-aid`, `/study-motivation-course`, `/distance-education` (+ `[slug]`), `/about` (+ sub-pages), `/news` (+ `[slug]`), `/participant-stories`, `/restaurant`, `/venues` (+ `[slug]`), `/boarding`, `/contact`, `/apply/[code]` (course applications — inert, see Current Status), `/privacy`, `/sign-in`, `/create-account`, `/forgot-password` / `/reset-password`, `/403`
 - Studio (`/studio/*`): one editor per content type — course CRUD (`manage-courses`, `manage-course-instances`, `applications`), news, participant stories, venues + inquiries, profiles, departments, typography (`style-templates`), and a block editor per singleton content page
 - Portals: `/restaurant-admin` (admin + restaurant), `/facilities` (admin + facilities), `/admin` (admin only, incl. user management and an IT handbook at `/admin/handbook`)
 - API: REST-ish routes under `/api/*` mirroring the Studio structure — one `GET` (public)/`PUT` (studio-gated) content endpoint per singleton page, plus CRUD endpoints for courses, news, venues, profiles, departments, and maintenance reports; `/api/upload` + `/api/media/[...key]` for R2-backed file storage
@@ -92,6 +100,12 @@ Remaining gaps and possible next steps for the demo:
 - Expand seeded participant stories/course instances if a richer demo dataset is wanted.
 - Add an Instagram access token to demonstrate the `instagram` block live (currently gated behind `INSTAGRAM_ACCESS_TOKEN`, not required for the demo to function).
 - Accessibility pass for WCAG 2.1 AA across all public pages.
+- Decide what to do about Google Fonts: the Studio font picker loads 18 families from
+  `fonts.googleapis.com`, so every visitor's IP reaches Google. Disclosed in `/privacy`;
+  self-hosting a narrower list would remove it (see `FONTS.md`).
+- Decide whether the public forms should be inert unconditionally (as now) or gated on
+  `DEMO_LOCKDOWN`, so a non-demo deployment of this CMS could accept real submissions.
+  Turnstile is dormant until that is settled — `TurnstileWidget` is rendered nowhere.
 - Optional: wire up Cloudflare Web Analytics for the demo Worker.
 - Optional: automate deploys from GitHub Actions (not currently set up — manual deploy only, by design for a portfolio demo).
 
@@ -103,6 +117,6 @@ Remaining gaps and possible next steps for the demo:
 - `DESIGN.md` - visual design system.
 - `COURSES.md` - unified Course data model.
 - `FONTS.md` - typography catalogue and Style Templates notes.
-- `EMAIL.md` - email setup (Gmail API) and DNS/MX migration plan.
+- `EMAIL.md` - email setup (Gmail API) and DNS/MX migration plan (production runbook; not executable in this demo).
 - `src/lib/auth/roles.ts` - role definitions (admin / developer / staff / restaurant / facilities).
 - `docs/internal/ROADMAP-CHANGELOG.md` - archived historical build log (gitignored, not in the public repo).
