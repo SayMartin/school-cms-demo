@@ -234,12 +234,12 @@ export function Footer() {
         {/* Row 2: copyright + privacy + animation toggle */}
         <div className="mt-4 lg:-mt-5 flex flex-wrap items-center gap-x-3 gap-y-1">
           <p className="text-sm text-gray-700">
-            © {new Date().getFullYear()}{" "}
+            © {new Date().getFullYear()} Martin Persson ·{" "}
             <a
-              href="mailto:support@appfinningar.se"
-              className="hover:text-gray-900 transition-colors"
+              href="https://appfinningar.se"
+              className="font-bold text-blue-600 hover:text-blue-800 transition-colors"
             >
-              Martin Persson — support@appfinningar.se
+              appfinningar.se
             </a>
           </p>
           <span className="text-gray-700 select-none" aria-hidden="true">
