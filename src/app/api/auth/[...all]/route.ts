@@ -1,5 +1,6 @@
 import { createAuth } from "@/lib/auth/auth";
 import { demoLockCheck } from "@/lib/auth/demo-lock";
+import { rateLimit, isMutation } from "@/lib/rate-limit";
 import { getDb } from "@/lib/db/client";
 
 export const dynamic = "force-dynamic";
@@ -17,6 +18,15 @@ export const dynamic = "force-dynamic";
 // ---------------------------------------------------------------------------
 
 async function handler(request: Request) {
+  // Credential endpoints first. Better Auth ships its own limiter, but it opts
+  // out whenever it cannot resolve a client IP — which is always, now that
+  // advanced.ipAddress.disableIpTracking is set — so the built-in check never
+  // runs. This restores a brute-force cap without putting an address in D1.
+  if (isMutation(request.method)) {
+    const limited = await rateLimit(request, "AUTH_LIMITER");
+    if (limited) return limited;
+  }
+
   // Portfolio demo: public registration is disabled. The UI already hides the
   // sign-up form behind an info overlay; this blocks the endpoint itself so it
   // can't be called directly. Gated on DEMO_LOCKDOWN (which fails closed) rather

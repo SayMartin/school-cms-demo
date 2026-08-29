@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/* Self-hosted typefaces for the Studio picker. Generated — see
+   scripts/fetch-google-fonts.mjs. Declaring all 17 costs nothing: a browser
+   downloads a @font-face file only when something on the page actually uses
+   that family, so a visitor fetches just the ones currently applied. */
+@import "./fonts-google.css";
+
 /* Tailwind v4 safelist: dynamiskt genererade klasser som JIT inte kan detektera */
 @source inline("border-t-{brand-green,brand-green-dark,brand-pink,brand-pink-dark,brand-yellow,brand-yellow-dark,brand-blue,brand-blue-dark}");
 

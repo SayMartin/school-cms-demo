@@ -454,13 +454,82 @@ see `src/lib/auth/demo-lock.ts` for the guarded endpoints.
 - **Retention** is swept on sign-in via `databaseHooks.session.create.after` in
   `src/lib/auth/auth.ts`: expired `Session` and `Verification` rows are deleted.
   Cloudflare cron triggers would need a `scheduled` handler, which OpenNext owns.
-- **Third parties that see a visitor:** Google Fonts (IP + user agent, on every
-  page load — the one unresolved item, see FONTS.md), YouTube via
-  `youtube-nocookie.com` (only on play), Cloudflare (hosting). Instagram is
-  fetched server-side and sees nothing. Adding another one means updating
-  `/privacy` in the same change.
+- **No visitor IP is stored.** `advanced.ipAddress.disableIpTracking` is set in
+  `src/lib/auth/auth.ts`, so Better Auth writes `""` into `Session.ipAddress`
+  instead of reading `x-forwarded-for`. The column stays because it is part of
+  Better Auth's schema. Every session row is world-readable via the published
+  demo login, and an IP is the one field in there that could identify a real
+  person. Don't remove the flag — but note the side effect below.
+- **Third parties that see a visitor:** Cloudflare (hosting), and nothing else
+  on a plain page load. Typefaces are self-hosted (see FONTS.md), so the Google
+  Fonts request that used to happen on every page load is gone. The rest wait
+  for the visitor to act first: YouTube via `youtube-nocookie.com` (only on
+  play), Google Maps via `MapEmbed` (only after the button is pressed).
+  Instagram is the exception to watch — the post list is fetched server-side,
+  but `InstagramFeed` then renders `<img>` tags pointing at Meta's CDN, so a
+  page carrying an `instagram` block does expose the visitor's IP to Meta.
+  Adding another third party means updating `/privacy` in the same change.
+- **Never embed a third party directly in a page.** `MapEmbed`
+  (`src/components/map-embed.tsx`) is the pattern: render a placeholder, load the
+  iframe on click. A plain `<iframe>` contacts the vendor on page load, which
+  would make `/privacy` wrong and would need a consent banner.
 - **`/privacy` is static code, not a D1 content block**, precisely so demo
   credentials can't rewrite it. Bump `LAST_UPDATED` when the substance changes.
+
+### Rate limiting
+
+`src/lib/rate-limit.ts` wraps three Cloudflare Rate Limiting bindings, declared
+under `"ratelimits"` in `wrangler.jsonc`. The binding is the right tool here
+because it keeps no readable record: it counts against a key inside Cloudflare
+and forgets it when the window closes, so `/privacy` can still say no visitor
+data is kept. Keys are a SHA-256 of the client IP, never the address itself.
+
+| Limiter | Applies to | Cap |
+|---|---|---|
+| `AUTH_LIMITER` | mutations on `/api/auth/*` | 10 / 60s |
+| `UPLOAD_LIMITER` | `POST /api/upload`, before the auth check | 10 / 60s |
+| `WRITE_LIMITER` | every mutation through a guard in `src/lib/auth/guards.ts` | 60 / 60s |
+
+- **`AUTH_LIMITER` is not optional.** Better Auth's own limiter calls `getIp()`
+  and skips the check entirely when no address comes back
+  (`resolveRateLimitConfig` returns `null`, and `onRequestRateLimit` does
+  `if (!config) return`). Since `disableIpTracking` is set, that is every
+  request — so the built-in brute-force cap on `/sign-in` never runs, and this
+  binding is what replaces it. Turning IP tracking back on to "fix" it would
+  trade a working limiter for stored IPs; keep both as they are.
+- **The guards are the choke point.** Every privileged endpoint already calls
+  `requireStudioAccess` / `requireAdminAccess` / `requireRestaurantAccess` /
+  `requireFacilitiesAccess`, so the limit lives there rather than in ~40 route
+  files. Reads pass free; only `isMutation()` methods spend a token.
+- **It fails open**, unlike `demoLockCheck()`. A missing binding or a throw
+  inside the limiter lets the request through: this protects availability and
+  spend, it is not an authorization control, and the real guards stand behind
+  it. Never reuse this helper as a security gate.
+- Two platform limits worth knowing: counting is **per-colo**, not global, and
+  `period` accepts only `10` or `60` seconds.
+
+### Uploads and headers
+
+The Studio password is public, so `/api/upload` is in practice a public write
+path into R2. Two rules follow:
+
+- **No SVG.** `ALLOWED_TYPES` in `src/app/api/upload/route.ts` is raster and
+  video only. An SVG is a script container and `/api/media` serves it from this
+  origin, so accepting one would let any visitor store a script that runs as this
+  site and reads a signed-in editor's session. Don't add it back.
+- **`/api/media` only renders types it recognises.** `INLINE_TYPES` in
+  `src/app/api/media/[...key]/route.ts` mirrors the upload allowlist; anything
+  else — including an object stored before a type was dropped — is served as
+  `application/octet-stream` with `Content-Disposition: attachment`. Every
+  response carries `X-Content-Type-Options: nosniff`, and `next.config.ts` adds
+  `default-src 'none'; sandbox` on top for this path specifically.
+
+`next.config.ts` sets the site-wide security headers (CSP, HSTS,
+`X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`). The CSP's `frame-src`
+list is the same set of third parties `/privacy` names — adding an embed means
+adding it in both places, or it will silently fail to load. `font-src` and
+`style-src` are `'self'` only, because fonts are self-hosted; a Google Fonts
+`<link>` added back would be blocked rather than merely undocumented.
 
 ## Environment Variables
 

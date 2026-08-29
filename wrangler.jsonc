@@ -60,6 +60,44 @@
 	// is nowhere for a deploy:prod or migrate:prod to go — impossible to
 	// accidentally hit a real domain or real prod D1/R2.
 	"env": {},
+	// Rate limiting. The Studio password is public, so every privileged write
+	// path is effectively a public one — these caps are what stands between a
+	// bored visitor and a filled database or an R2 bill. namespace_id is a
+	// per-Worker identifier chosen here, not a resource to create in the
+	// dashboard; the counters are per-colo and store nothing readable, which is
+	// why /privacy can still say no visitor data is kept.
+	"ratelimits": [
+		{
+			// Sign-in and the other credential endpoints. Better Auth's own limiter
+			// is inert now that IP tracking is off (it skips the check when it
+			// cannot resolve an address), so this replaces it.
+			"name": "AUTH_LIMITER",
+			"namespace_id": "1001",
+			"simple": {
+				"limit": 10,
+				"period": 60,
+			},
+		},
+		{
+			// Uploads into R2. The tightest cap: one request here can cost 200 MB.
+			"name": "UPLOAD_LIMITER",
+			"namespace_id": "1002",
+			"simple": {
+				"limit": 10,
+				"period": 60,
+			},
+		},
+		{
+			// Every other authenticated mutation — the Studio and portal CRUD
+			// endpoints. Loose enough that ordinary editing never notices it.
+			"name": "WRITE_LIMITER",
+			"namespace_id": "1003",
+			"simple": {
+				"limit": 60,
+				"period": 60,
+			},
+		},
+	],
 	// R2 — separate demo bucket
 	"r2_buckets": [
 		{

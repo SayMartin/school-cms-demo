@@ -47,6 +47,19 @@ export function createAuth(db: Db) {
       updateAge: 60 * 60 * 24,
     },
 
+    advanced: {
+      // The Session row has an ipAddress column and Better Auth fills it from
+      // the request by default. /privacy promises visitors that their IP is
+      // not stored, and the demo Studio password is public, so every session
+      // row is world-readable — an IP is the one field in there that could
+      // identify a real person. Turn the collection off rather than document
+      // it. Rate limiting still works: it falls back to a shared per-path
+      // bucket when no IP is resolvable.
+      ipAddress: {
+        disableIpTracking: true,
+      },
+    },
+
     databaseHooks: {
       session: {
         create: {

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 // site: the demo Studio password is published on /sign-in, so a policy stored in
 // the database could be rewritten by anyone. Bump the date whenever the substance
 // changes — a policy dated before the practice it describes is worse than none.
-const LAST_UPDATED = "23 August 2026";
+const LAST_UPDATED = "29 August 2026";
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -112,7 +112,7 @@ export default function PrivacyPage() {
           </li>
           <li>
             <strong className="font-medium">New accounts.</strong> Sign-up is closed.
-            Only the five pre-existing demo accounts can log in, and the sign-up
+            Only the four pre-existing demo accounts can log in, and the sign-up
             endpoint rejects requests rather than merely hiding the button.
           </li>
           <li>
@@ -139,8 +139,10 @@ export default function PrivacyPage() {
 
       <Section title="Who else can see it">
         <p>
-          Everything runs on Cloudflare&apos;s network. These third parties are
-          involved, each limited to one job:
+          Everything runs on Cloudflare&apos;s network. Reading a page contacts
+          nobody else: the typefaces are served from this site rather than from
+          Google Fonts, so no request leaves for a third party unless you ask for
+          one. These are the parties that can be involved, each limited to one job:
         </p>
         <ul className="list-disc space-y-2 pl-5">
           <li>
@@ -148,11 +150,10 @@ export default function PrivacyPage() {
             application and the database, and carries all traffic to the site.
           </li>
           <li>
-            <strong className="font-medium">Google</strong> — the typefaces the Studio
-            lets an editor choose from are loaded from Google Fonts, so your browser
-            requests them from Google and Google sees your IP address and user agent
-            on each page load. No other data reaches them, and this is the only third
-            party contacted just by reading a page.
+            <strong className="font-medium">Google Maps</strong> — the map on the
+            contact page is not loaded until you press the button on it. Until then
+            nothing is requested from Google. Press it and the embed loads, which
+            sends your IP address to Google and lets Google set its own cookies.
           </li>
           <li>
             <strong className="font-medium">YouTube</strong> — pages containing an
@@ -164,9 +165,11 @@ export default function PrivacyPage() {
             play a video, YouTube sets nothing.
           </li>
           <li>
-            <strong className="font-medium">Instagram</strong> — the Instagram feed is
-            fetched by the server, not your browser, so nothing about you is sent to
-            Meta.
+            <strong className="font-medium">Instagram</strong> — where an editor has
+            placed an Instagram feed, the list of posts is fetched by the server, but
+            the thumbnails are then loaded by your browser from Meta&apos;s image
+            servers, which sees your IP address and user agent. Pages without such a
+            feed contact Meta not at all.
           </li>
         </ul>
         <p>
@@ -228,7 +231,8 @@ export default function PrivacyPage() {
           </code>
           , which keeps you signed in to a demo account. It is strictly necessary and
           is removed when you sign out. Browsing the public site sets no cookie at
-          all.
+          all, unless you load the map on the contact page or play an embedded
+          video — both wait for you to press something first.
         </p>
         <p>
           There are no analytics cookies and no tracking — which is why this site

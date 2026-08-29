@@ -7,7 +7,6 @@ import { ScrollToTop } from "@/components/scroll-to-top";
 import { SoapBubblesBg } from "@/components/soap-bubbles-faceless";
 import { getDb } from "@/lib/db/client";
 import { typographySettings, bgGradientSettings } from "@/lib/db/schema";
-import { buildGoogleFontsUrl } from "@/lib/google-fonts";
 import "./globals.css";
 
 const geist = localFont({
@@ -80,13 +79,6 @@ export default async function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   const [typo, bg] = await Promise.all([getTypography(), getBgGradient()]);
 
-  const googleFontsUrl = buildGoogleFontsUrl([
-    typo.h1Font,
-    typo.h2Font,
-    typo.h3Font,
-    typo.bodyFont,
-  ]);
-
   const cssVars = `
     :root {
       --font-h1:   ${fontValue(typo.h1Font)};
@@ -102,17 +94,9 @@ export default async function RootLayout({
       className={`${geist.variable} h-full antialiased scroll-smooth`}
     >
       <head>
-        {googleFontsUrl && (
-          <>
-            <link rel="preconnect" href="https://fonts.googleapis.com" />
-            <link
-              rel="preconnect"
-              href="https://fonts.gstatic.com"
-              crossOrigin="anonymous"
-            />
-            <link href={googleFontsUrl} rel="stylesheet" />
-          </>
-        )}
+        {/* No font <link> here. Every selectable typeface is self-hosted and
+            declared in fonts-google.css, which globals.css imports — a page
+            load contacts no third party at all. */}
         <style dangerouslySetInnerHTML={{ __html: cssVars }} />
       </head>
       <body className="flex min-h-full flex-col">

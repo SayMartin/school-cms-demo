@@ -1,18 +1,22 @@
 import { NextResponse } from "next/server";
 import { requireStudioAccess } from "@/lib/auth/guards";
 import { getStorage } from "@/lib/r2/client";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10 MB
 const MAX_VIDEO_SIZE = 200 * 1024 * 1024; // 200 MB
 
+// No SVG. An SVG is a script container, /api/media serves uploads from this
+// same origin, and the Studio password is published on /sign-in — so accepting
+// one would let any visitor store a script that runs as this site and reads a
+// signed-in editor's session. Raster formats and video carry no such payload.
 const ALLOWED_TYPES: Record<string, string> = {
   "image/jpeg": "jpg",
   "image/png": "png",
   "image/webp": "webp",
   "image/gif": "gif",
-  "image/svg+xml": "svg",
   "video/mp4": "mp4",
   "video/webm": "webm",
   "video/ogg": "ogg",
@@ -20,6 +24,12 @@ const ALLOWED_TYPES: Record<string, string> = {
 };
 
 export async function POST(req: Request) {
+  // Before the auth check, not after: the point is to cap what one caller can
+  // cost, and the published Studio password means passing the auth check is no
+  // evidence of good intent. One request here can be 200 MB into R2.
+  const limited = await rateLimit(req, "UPLOAD_LIMITER");
+  if (limited) return limited;
+
   const access = await requireStudioAccess(req);
   if (access.response) return access.response;
 

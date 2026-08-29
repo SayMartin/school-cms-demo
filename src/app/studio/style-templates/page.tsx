@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Lock, LockOpen } from "lucide-react";
 import { StudioSaveBar } from "@/components/studio-save-bar";
 import { authClient } from "@/lib/auth/auth-client";
-import { ALL_GOOGLE_FONTS_URL } from "@/lib/google-fonts";
 
 const FONTS = [
  { value: "Geist", label: "Geist", headingOnly: false },
@@ -282,7 +281,6 @@ export default function FormatmallarPage() {
  return (
  <div className="mx-auto max-w-7xl px-4 py-8">
  {/* All fonts are loaded here for live preview in the selector below — the public site only loads the actively selected ones (see src/app/layout.tsx). */}
- <link href={ALL_GOOGLE_FONTS_URL} rel="stylesheet" />
  <StudioSaveBar
  isDirty={isDirtyReal && !isLocked}
  saving={saving}

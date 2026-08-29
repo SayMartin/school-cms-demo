@@ -26,3 +26,14 @@ Read that file before making any changes.
   form is inert and every write endpoint behind one is guarded by
   `demoLockCheck()`. Don't remove a guard, and don't add a public form that
   persists what a visitor types. See *Privacy & Personal Data* in AGENTS.md.
+- **Do not accept SVG uploads, and do not store a visitor's IP.** The same
+  published-password reasoning applies: an uploaded SVG would run as this site,
+  and `Session.ipAddress` is world-readable. See *Uploads and headers* in
+  AGENTS.md.
+- **Do not embed a third party directly in a page.** Use the click-to-load
+  `MapEmbed` pattern, and list any new third party in `/privacy` and in the CSP
+  in `next.config.ts` in the same change.
+- **Do not remove the rate limiters, and do not use them as a security gate.**
+  `AUTH_LIMITER` is the only brute-force cap on sign-in — Better Auth's own is
+  inert while IP tracking is off. `rateLimit()` fails open by design. See
+  *Rate limiting* in AGENTS.md.

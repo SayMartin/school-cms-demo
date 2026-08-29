@@ -8,6 +8,7 @@ import { Slideshow } from "@/components/slideshow";
 import { ProfileCard } from "@/components/profile-card";
 import { YoutubeBlockView } from "@/components/youtube-block-view";
 import { VideoBlockView } from "@/components/video-block-view";
+import { MapEmbed } from "@/components/map-embed";
 import { parseContentBlocks } from "@/lib/parse-blocks";
 
 export const dynamic = "force-dynamic";
@@ -185,18 +186,12 @@ export default async function KontaktPage() {
       })}
 
       <div className="mt-10">
-         <h2>Find us</h2>
-        <div className="relative w-full mt-3 overflow-hidden" style={{ aspectRatio: "7/3" }}>
-          <iframe
-            src="https://maps.google.com/maps?q=Stockholm+Sweden&ll=59.3293,18.0686&z=12&output=embed"
-            className="absolute inset-0 h-full w-full border-0"
-            allowFullScreen
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            title="Map to Demo Folk High School"
-          />
-        </div>
-      </div> 
+        <h2>Find us</h2>
+        <MapEmbed
+          src="https://maps.google.com/maps?q=Stockholm+Sweden&ll=59.3293,18.0686&z=12&output=embed"
+          title="Map to Demo Folk High School"
+        />
+      </div>
 
       {deptItems.length > 0 && (
         <div className="mt-16 space-y-14">

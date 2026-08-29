@@ -12,6 +12,12 @@ interface CloudflareEnv {
   // R2 storage bucket — binding name "STORAGE" (see wrangler.jsonc)
   STORAGE: R2Bucket;
 
+  // Rate limiting — see src/lib/rate-limit.ts and the "ratelimits" array in
+  // wrangler.jsonc. Absent outside the Workers runtime, so callers fail open.
+  AUTH_LIMITER: RateLimit;
+  UPLOAD_LIMITER: RateLimit;
+  WRITE_LIMITER: RateLimit;
+
   // Environment identifier — "dev" | "prod" (set in wrangler.jsonc per env)
   APP_ENV: string | undefined;
 
