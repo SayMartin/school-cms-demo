@@ -1,7 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(curl -s -D - -o /tmp/verify3.jpg \"https://school-cms-demo.appfinningar.se/api/media/kurser/demo-02.jpg\")"
-    ]
-  }
-}
