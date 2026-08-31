@@ -168,23 +168,23 @@ See the table in `AGENTS.md → Design System` for the full list.
 
 ### Navbar
 
-- Background: light gray with `border-b border-gray-200`
-- Logo: `text-xl font-bold text-brand-green`
-- Active link: `font-semibold text-brand-green`
-- Inactive link: `text-gray-600 hover:text-brand-green`
-- Mobile: hamburger menu (toggle), full-width dropdown
-- Dropdown menus: **Courses** and **About** are both hover-dropdowns on desktop, toggle on mobile. Same panel design: `w-72 rounded-xl border border-gray-100 shadow-lg`, rows with colored dot + heading + description text.
-- **Logged-in user:** Avatar button (initials in a green circle) at the far right on desktop. Click opens a dropdown with role-based options: **My Pages** (all logged-in users), **Studio** (staff + admin), **Admin** (admin), **Sign Out**. Dropdown closes on click outside (`useRef` + click-outside effect). On mobile the same options appear as a dedicated block in the hamburger menu.
+- Background: the sky gradient — `bg-linear-to-b from-brand-green to-brand-green-light`, `sticky top-0 z-50`
+- Border: `border-b border-brand-green-dark/20` at rest, swapped for `shadow-md` once scrolled past 4px
+- Logo: `text-base font-black tracking-[0.22em] uppercase text-gray-900` + a tagline line beneath it
+- Active link: `bg-white/50 text-brand-green-dark` (5.91:1 — the deep-sky token exists to make this pass AA)
+- Inactive link: `text-gray-700 hover:bg-white/40 hover:text-gray-900`
+- Mobile: hamburger menu (toggle), full-width dropdown on `bg-brand-green-light`
+- **No auth UI in the navbar.** `nav.tsx` has no session logic at all — signed-in state lives in the footer (see below).
 
 ### Footer
 
 - Background: `bg-linear-to-b from-brand-deep-sea to-brand-deep-sea-dark` — the only dark surface on the site
 - Layout: desktop uses an inline `flex-wrap` row with school name + SVG icons + copyright; mobile stacks the blocks vertically.
-- No auth logic in the footer — signed-in/signed-out state is handled only in the navbar (avatar dropdown).
+- **Auth lives here**, not in the navbar: role links (Admin / Studio / Restaurant / Facilities), sign-in/sign-out, and a "Signed in as" line, all desktop-only (`hidden lg:flex`).
 - Icons: inline SVG, `h-5 w-5`, `text-brand-sea-foam hover:text-white`
 - Text: `text-white` for the school name; links use `text-brand-yellow hover:text-white` — the sunset gold from the band above, returning against the water (5.60:1)
 - Copyright: `text-sm text-brand-sea-foam` (6.04:1)
-- The footer is a Server Component (no `"use client"`).
+- The footer reads the session and owns the reduced-motion toggle, so it is a Client Component.
 
 ### Hero section (homepage)
 
@@ -259,7 +259,7 @@ Minimal expand/collapse component styled as a text link. Used for the bio toggle
 
 ### AccordionBlock
 
-Styled accordion for public pages and the Studio landing page. Green header (`brand-green-light`), animated chevron, smooth `grid-rows` animation.
+Styled accordion for public pages and the Studio landing page. Sky header (`brand-green-light`), animated chevron, smooth `grid-rows` animation.
 
 ```tsx
 <AccordionBlock summary="Show more" defaultOpen>
@@ -267,7 +267,7 @@ Styled accordion for public pages and the Studio landing page. Green header (`br
 </AccordionBlock>
 ```
 
-- Header: `bg-brand-green-light`, `border border-gray-200`, `rounded-xl`
+- Header: `bg-brand-green-light` (light sky), `border border-gray-200`, `rounded-xl`
 - Chevron rotates 90° when the accordion is open (300 ms ease-in-out)
 - Content is animated with `grid-rows-[0fr → 1fr]`, 300 ms ease-in-out
 - Props: `summary`, `children`, `defaultOpen?` (boolean, default `false`)
@@ -283,7 +283,7 @@ Compact info row at the top of venue pages. Renders category badge, capacity, pr
 <VenueView venue={venueData} />
 ```
 
-- Category badge: color-coded per category (conference room=blue, event venue=pink, sports hall=green, classroom=yellow, dining hall=parchment)
+- Category badge: one `brand-*-light` / `brand-*-dark` pair per category — Conference Room=blue, Event Venue=coral (`brand-pink`), Sports Hall=sky (`brand-green`), Classroom=sunset (`brand-yellow`), Dining Hall=parchment, Other=gray
 - Features chips: `rounded-full border bg-gray-50`
 - File: `src/components/venue-view.tsx` — Server Component
 - Used only on `/venues/[slug]`

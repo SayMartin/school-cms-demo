@@ -300,7 +300,7 @@ All content pages use a **block system** for freeform page layout. Each page sto
 
 **Public renderers** (`src/components/`):
 - `RichTextContent` — renders stored HTML from RichTextEditor
-- `AccordionBlock` — styled accordion with green header + animated chevron. Props: `summary`, `children`, `defaultOpen?`
+- `AccordionBlock` — styled accordion with sky header (`brand-green-light`) + animated chevron. Props: `summary`, `children`, `defaultOpen?`
 - `AccordionButton` — minimal text-link expand/collapse (used by ProfileCard bio)
 - `Slideshow` — image carousel with navigation
 - `ProfilesBlockView` — fetches + renders DB profiles as ProfileCard grid
