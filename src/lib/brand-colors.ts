@@ -1,13 +1,17 @@
+// Hexvärdena speglar --color-brand-* i globals.css och måste hållas i synk —
+// NavHubCard och BrandColorPicker sätter dem som inline-stilar, inte som
+// Tailwind-klasser. Etiketterna visas för redaktörer i Studios färgväljare och
+// namnger färgen som den faktiskt ser ut, inte tokenets historiska namn.
 export const BRAND_COLORS = [
-  { token: "brand-green-light", label: "Light Green", hex: "#e3ffe3" },
-  { token: "brand-green", label: "Green", hex: "#affdaf" },
-  { token: "brand-green-dark", label: "Dark Green", hex: "#4aad4a" },
-  { token: "brand-yellow-light", label: "Light Yellow", hex: "#ffff99" },
-  { token: "brand-yellow", label: "Yellow", hex: "#ffff50" },
-  { token: "brand-yellow-dark", label: "Dark Yellow", hex: "#c8c800" },
-  { token: "brand-pink-light", label: "Light Pink", hex: "#fee8fe" },
-  { token: "brand-pink", label: "Pink", hex: "#fdb9fc" },
-  { token: "brand-pink-dark", label: "Dark Pink", hex: "#cc7acc" },
+  { token: "brand-green-light", label: "Light Sky", hex: "#e3f1f9" },
+  { token: "brand-green", label: "Sky", hex: "#a6cfe6" },
+  { token: "brand-green-dark", label: "Deep Sky", hex: "#1f5a78" },
+  { token: "brand-yellow-light", label: "Light Sunset", hex: "#fce7ce" },
+  { token: "brand-yellow", label: "Sunset", hex: "#f6c68f" },
+  { token: "brand-yellow-dark", label: "Dark Sunset", hex: "#8e4a16" },
+  { token: "brand-pink-light", label: "Light Coral", hex: "#fce0da" },
+  { token: "brand-pink", label: "Coral", hex: "#f5c2b8" },
+  { token: "brand-pink-dark", label: "Dark Coral", hex: "#9c4436" },
   { token: "brand-blue-light", label: "Light Blue", hex: "#dceeff" },
   { token: "brand-blue", label: "Blue", hex: "#a0d4ff" },
   { token: "brand-blue-dark", label: "Dark Blue", hex: "#3a82c8" },

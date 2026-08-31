@@ -336,7 +336,7 @@ export default async function RestaurantPage({
 
         <div style={{ textAlign: "center", paddingBottom: "8pt" }}>
           <div style={{ display: "flex", justifyContent: "center" }}>
-            <SchoolLogo size={40} color="#affdaf" />
+            <SchoolLogo size={40} color="#a6cfe6" />
           </div>
           <p
             style={{

@@ -16,27 +16,49 @@ This document is the single source of truth for colors, typography, spacing, and
 
 ## Color Palette
 
-Four recurring primary colors — warm, illustrative, and recognizable. Used as the site's identity colors in buttons, badges, section backgrounds, and decorative touches.
+The palette is built on one image: **sea, sky and sunset**. A visitor scrolling the
+page passes through it in order — sky at the top (header), the sunset on the
+horizon in the middle (the Why Us band), and deep sea at the bottom (footer).
+
+The token *names* are historical (`brand-green`, `brand-yellow`, `brand-pink`)
+and were kept so the change didn't have to touch ~200 call sites; only the values
+moved. The labels shown to editors in Studio's colour picker name the colour as
+it actually looks. `src/lib/brand-colors.ts` duplicates these hex values for
+inline styles and must be kept in sync with `globals.css`.
 
 ### Primary colors
 
-| Tailwind class      | Hex       | Usage                                                   |
-| -------------------- | --------- | -------------------------------------------------------- |
-| `brand-green-light` | `#E3FFE3` | Hover backgrounds, navbar bottom                          |
-| `brand-green`       | `#AFFDAF` | Primary accent — navbar, active links, course cards      |
-| `brand-green-dark`  | `#4AAD4A` | Borders, darker accents                                  |
-| `brand-yellow-light`| `#FFFF99` | Light yellow — backgrounds                               |
-| `brand-yellow`      | `#FFFF50` | Secondary accent — summer courses, about section         |
-| `brand-yellow-dark` | `#C8C800` | Dark yellow — borders, darker accents                    |
-| `brand-pink-light`  | `#FEE8FE` | Light pink backgrounds                                   |
-| `brand-pink`        | `#FDB9FC` | Tertiary accent — distance education, footer             |
-| `brand-pink-dark`   | `#CC7ACC` | Gradient start for pink sections                         |
-| `brand-blue-light`   | `#DCEEFF` | Light blue backgrounds                                   |
-| `brand-blue`         | `#A0D4FF` | Quaternary accent — news cards                           |
-| `brand-blue-dark`    | `#3A82C8` | Blue hover accents                                       |
-| `brand-purple-light` | `#E8E8FF` | Light purple backgrounds                                 |
-| `brand-purple`       | `#CBCBFF` | Quinary accent — NavGroup balls, NavHubCard default      |
-| `brand-purple-dark`  | `#9898CC` | Purple hover accents                                     |
+| Tailwind class       | Hex       | Reads as   | Usage                                                    |
+| -------------------- | --------- | ---------- | -------------------------------------------------------- |
+| `brand-green-light`  | `#E3F1F9` | Light sky  | Hover backgrounds, navbar bottom                          |
+| `brand-green`        | `#A6CFE6` | Sky        | Primary accent — navbar, active links, course cards       |
+| `brand-green-dark`   | `#1F5A78` | Deep sky   | Borders, active nav link, primary-button hover, rich-text links |
+| `brand-yellow-light` | `#FCE7CE` | Light sunset | Light backgrounds                                       |
+| `brand-yellow`       | `#F6C68F` | Sunset     | Secondary accent — Why Us band (top), summer courses      |
+| `brand-yellow-glow`  | `#F2B183` | Sunset coral | Bottom stop of the Why Us gradient only                 |
+| `brand-yellow-dark`  | `#8E4A16` | Dark sunset | Borders, darker accents                                  |
+| `brand-pink-light`   | `#FCE0DA` | Light coral | Studio table rows, light backgrounds                     |
+| `brand-pink`         | `#F5C2B8` | Coral      | Tertiary accent — distance education, restaurant section  |
+| `brand-pink-dark`    | `#9C4436` | Dark coral | BlockCard header (**dark — carries light text**), badge text |
+| `brand-deep-sea`     | `#17506A` | Sea        | Footer gradient, top stop                                 |
+| `brand-deep-sea-dark`| `#0F3644` | Deep sea   | Footer gradient, bottom stop                              |
+| `brand-sea-foam`     | `#C3DAE2` | Sea foam   | Muted text on the footer's dark ground                    |
+| `brand-blue-light`   | `#DCEEFF` | —          | Light blue backgrounds                                    |
+| `brand-blue`         | `#A0D4FF` | —          | Quaternary accent — news cards                            |
+| `brand-blue-dark`    | `#3A82C8` | —          | Blue hover accents                                        |
+| `brand-purple-light` | `#E8E8FF` | —          | Light purple backgrounds                                  |
+| `brand-purple`       | `#CBCBFF` | —          | Quinary accent — NavGroup balls, NavHubCard default        |
+| `brand-purple-dark`  | `#9898CC` | —          | Purple hover accents                                      |
+
+**Two dark tokens.** `brand-deep-sea` / `brand-deep-sea-dark` and `brand-pink-dark`
+are the only brand colours that carry *light* text. Everything else is a light
+surface for dark text. Don't put `text-gray-*` on them.
+
+**Known overlap.** `brand-green` (sky, `#A6CFE6`) now sits close to `brand-blue`
+(`#A0D4FF`) — an RGB distance of 26. They rarely meet in the UI, but they sit
+side by side in `BrandColorPicker`. Moving `brand-blue` deeper was tried and
+rejected: every darker blue drops `text-gray-600` below 4.5:1. Fixing it properly
+means renaming tokens to their roles, which is a separate pass.
 
 ### Parchment palette
 
@@ -63,7 +85,7 @@ Used for nav-hub cards (`NavHubCard`) and `BrandColorPicker`. All levels are Tai
 
 ### Page background
 
-`<body>` has a subtle parchment gradient: `linear-gradient(to bottom, #FDFCF8 0%, #F9F6EE 100%)`. The gradient spans the full document height (not `fixed`). The footer has its own background color (pink gradient) that covers the parchment.
+`<body>` has a subtle parchment gradient: `linear-gradient(to bottom, #FDFCF8 0%, #F9F6EE 100%)`. The gradient spans the full document height (not `fixed`). The footer has its own background (the deep-sea gradient) that covers the parchment.
 
 ---
 
@@ -156,12 +178,12 @@ See the table in `AGENTS.md → Design System` for the full list.
 
 ### Footer
 
-- Background: `bg-linear-to-b from-brand-pink-dark to-brand-pink`
+- Background: `bg-linear-to-b from-brand-deep-sea to-brand-deep-sea-dark` — the only dark surface on the site
 - Layout: desktop uses an inline `flex-wrap` row with school name + SVG icons + copyright; mobile stacks the blocks vertically.
 - No auth logic in the footer — signed-in/signed-out state is handled only in the navbar (avatar dropdown).
-- Icons: inline SVG, `h-5 w-5`, `text-gray-800 hover:text-gray-900`
-- Text: `text-gray-900` (dark text on a light pink background)
-- Copyright: `text-sm text-gray-700`
+- Icons: inline SVG, `h-5 w-5`, `text-brand-sea-foam hover:text-white`
+- Text: `text-white` for the school name; links use `text-brand-yellow hover:text-white` — the sunset gold from the band above, returning against the water (5.60:1)
+- Copyright: `text-sm text-brand-sea-foam` (6.04:1)
 - The footer is a Server Component (no `"use client"`).
 
 ### Hero section (homepage)

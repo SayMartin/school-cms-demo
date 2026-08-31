@@ -111,7 +111,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           tree={SCHOOL_NAV_TREE}
           isOpen={true}
           onClose={() => {}}
-          defaultColor="#3a7d44"
+          defaultColor="#1f5a78"
           onSelect={(node) => {
             console.log('Selected:', node.id);
           }}

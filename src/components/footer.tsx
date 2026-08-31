@@ -34,14 +34,14 @@ export function Footer() {
   const canOpenFastighet = hasFacilitiesAccess(userRole);
 
   return (
-    <footer className="print:hidden bg-linear-to-b pt-6 pb-8 from-brand-pink to-brand-pink-light">
+    <footer className="print:hidden bg-linear-to-b pt-6 pb-8 from-brand-deep-sea to-brand-deep-sea-dark">
       <div className="mx-auto max-w-7xl px-4">
         {/* Row 1: logo + icons on the left, auth on the right (desktop) */}
         <div className="flex items-start justify-between">
           <div className="flex flex-wrap items-center gap-x-5">
             <Link
               href="/"
-              className="font-bold hover:text-brand-pink-dark transition-colors"
+              className="font-bold text-white hover:text-brand-yellow transition-colors"
             >
               Demo Folk High School
             </Link>
@@ -50,7 +50,7 @@ export function Footer() {
               href="tel:+46101234500"
               aria-label="Phone: 010-123 45 00"
               title="010-123 45 00"
-              className="text-gray-800 hover:text-gray-900 transition-colors"
+              className="text-brand-sea-foam hover:text-white transition-colors"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -73,7 +73,7 @@ export function Footer() {
               href="mailto:exp@exempel-folkhogskola.se"
               aria-label="Email: exp@exempel-folkhogskola.se"
               title="exp@exempel-folkhogskola.se"
-              className="text-gray-800 hover:text-gray-900 transition-colors"
+              className="text-brand-sea-foam hover:text-white transition-colors"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -98,7 +98,7 @@ export function Footer() {
               rel="noopener noreferrer"
               aria-label="SchoolSoft"
               title="SchoolSoft"
-              className="text-gray-800 hover:text-gray-900 transition-colors"
+              className="text-brand-sea-foam hover:text-white transition-colors"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -123,7 +123,7 @@ export function Footer() {
               rel="noopener noreferrer"
               aria-label="Facebook"
               title="Facebook"
-              className="text-gray-800 hover:text-gray-900 transition-colors"
+              className="text-brand-sea-foam hover:text-white transition-colors"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -142,7 +142,7 @@ export function Footer() {
               rel="noopener noreferrer"
               aria-label="Instagram"
               title="Instagram"
-              className="text-gray-800 hover:text-gray-900 transition-colors"
+              className="text-brand-sea-foam hover:text-white transition-colors"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -164,7 +164,7 @@ export function Footer() {
                   {isAdmin && (
                     <Link
                       href="/admin"
-                      className="text-sm font-bold text-blue-700 hover:text-blue-800 transition-colors"
+                      className="text-sm font-bold text-brand-yellow hover:text-white transition-colors"
                     >
                       Admin
                     </Link>
@@ -172,7 +172,7 @@ export function Footer() {
                   {canOpenStudio && (
                     <Link
                       href="/studio"
-                      className="text-sm font-bold text-blue-700 hover:text-blue-800 transition-colors"
+                      className="text-sm font-bold text-brand-yellow hover:text-white transition-colors"
                     >
                       Studio
                     </Link>
@@ -180,7 +180,7 @@ export function Footer() {
                   {canOpenKoket && (
                     <Link
                       href="/restaurant-admin"
-                      className="text-sm font-bold text-blue-700 hover:text-blue-800 transition-colors"
+                      className="text-sm font-bold text-brand-yellow hover:text-white transition-colors"
                     >
                       Restaurant
                     </Link>
@@ -188,7 +188,7 @@ export function Footer() {
                   {canOpenFastighet && (
                     <Link
                       href="/facilities"
-                      className="text-sm font-bold text-blue-700 hover:text-blue-800 transition-colors"
+                      className="text-sm font-bold text-brand-yellow hover:text-white transition-colors"
                     >
                       Facilities
                     </Link>
@@ -196,12 +196,12 @@ export function Footer() {
                   <button
                     type="button"
                     onClick={handleSignOut}
-                    className="text-sm font-bold text-red-600 hover:text-red-800 transition-colors"
+                    className="text-sm font-bold text-red-200 hover:text-white transition-colors"
                   >
                     Sign out
                   </button>
                 </div>
-                <span className="pt-1 text-sm text-gray-800">
+                <span className="pt-1 text-sm text-brand-sea-foam">
                   Signed in as{" "}
                   {session.user.role === "admin"
                     ? "Admin"
@@ -219,11 +219,11 @@ export function Footer() {
               <>
                 <Link
                   href="/sign-in"
-                  className="text-sm font-bold text-blue-600 hover:text-blue-800 transition-colors"
+                  className="text-sm font-bold text-brand-yellow hover:text-white transition-colors"
                 >
                   Sign in
                 </Link>
-                <span className="pt-1 text-sm text-gray-800">
+                <span className="pt-1 text-sm text-brand-sea-foam">
                   Not signed in
                 </span>
               </>
@@ -233,31 +233,31 @@ export function Footer() {
 
         {/* Row 2: copyright + privacy + animation toggle */}
         <div className="mt-4 lg:-mt-5 flex flex-wrap items-center gap-x-3 gap-y-1">
-          <p className="text-sm text-gray-700">
+          <p className="text-sm text-brand-sea-foam">
             © {new Date().getFullYear()} Martin Persson ·{" "}
             <a
               href="https://appfinningar.se"
-              className="font-bold text-blue-600 hover:text-blue-800 transition-colors"
+              className="font-bold text-brand-yellow hover:text-white transition-colors"
             >
               appfinningar.se
             </a>
           </p>
-          <span className="text-gray-700 select-none" aria-hidden="true">
+          <span className="text-brand-sea-foam select-none" aria-hidden="true">
             ·
           </span>
           <Link
             href="/privacy"
-            className="text-sm font-bold text-blue-600 hover:text-blue-800 transition-colors"
+            className="text-sm font-bold text-brand-yellow hover:text-white transition-colors"
           >
             Privacy policy
           </Link>
-          <span className="text-gray-700 select-none" aria-hidden="true">
+          <span className="text-brand-sea-foam select-none" aria-hidden="true">
             ·
           </span>
           <button
             type="button"
             onClick={toggle}
-            className="text-sm font-bold text-blue-600 hover:text-blue-800 transition-colors"
+            className="text-sm font-bold text-brand-yellow hover:text-white transition-colors"
           >
             {reduced ? "Turn on animations" : "Turn off animations"}
           </button>

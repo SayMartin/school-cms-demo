@@ -324,7 +324,7 @@ const TartaSvg = React.memo(function TartaSvg({
             cx={cx}
             cy={cy}
             r={centerR}
-            fill="#FFFF50"
+            fill="#F6C68F"
             stroke="rgba(0,0,0,0.1)"
             strokeWidth={1.5}
           />
@@ -439,7 +439,7 @@ export function MiniRadialNav({ nodes, activeId, isOpen, onClick, size = 72 }: M
             key={node.id}
             d={makeSlicePath(cx, cy, rOut, rIn, i, total)}
             fill={node.color}
-            stroke={node.id === activeId ? "#FFFF50" : "#fff"}
+            stroke={node.id === activeId ? "#F6C68F" : "#fff"}
             strokeWidth={node.id === activeId ? 0.8 : 0.4}
             style={{ opacity: node.id === activeId ? 1 : isOpen ? 0.85 : 1 }}
           />
@@ -485,7 +485,7 @@ export default function RadialNav({
   isOpen,
   onClose,
   onSelect,
-  defaultColor = "#3a7d44",
+  defaultColor = "#1f5a78",
 }: RadialNavProps) {
   const router = useRouter();
 

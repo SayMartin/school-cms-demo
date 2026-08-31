@@ -58,14 +58,14 @@ export function BlockCard({
       {/* Card */}
       <div className="flex-1 overflow-hidden rounded-lg border border-gray-200">
         {/* Header — toggle */}
-        <div className="flex items-center gap-2 bg-brand-pink-dark px-3 py-2 select-none">
+        <div className="flex items-center gap-2 bg-brand-pink-dark px-3 py-2 text-white select-none">
           <button
             type="button"
             onClick={() => setOpen((o) => !o)}
             className="flex flex-1 items-center gap-2 text-left min-w-0"
           >
             <svg
-              className={`h-3.5 w-3.5 shrink-0 text-gray-600 transition-transform duration-200 ease-in-out ${open ? "rotate-90" : ""}`}
+              className={`h-3.5 w-3.5 shrink-0 transition-transform duration-200 ease-in-out ${open ? "rotate-90" : ""}`}
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -75,7 +75,7 @@ export function BlockCard({
             >
               <polyline points="9 18 15 12 9 6" />
             </svg>
-            <span className="rounded bg-white/60 px-2 py-0.5 text-sm font-medium text-gray-600">
+            <span className="rounded bg-white/90 px-2 py-0.5 text-sm font-medium text-gray-800">
               {label}
             </span>
             {summary && (

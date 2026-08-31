@@ -340,21 +340,25 @@ See [DESIGN.md](DESIGN.md) for the full visual design spec (colors, typography, 
 
 **Course detail hero images** — rendered full-width edge-to-edge, outside the `max-w-7xl px-4` container, with no `rounded-lg`. Applies to `CourseDetailView`, `summer-courses/course/[slug]/page.tsx`, `evening-courses/course/[slug]/page.tsx`. The image element sits above the content container as a separate full-bleed block.
 
-**ProfileCard** (`src/components/profile-card.tsx`) — circular photo (h-56 w-56 rounded-full overflow-hidden), fallback background `bg-brand-pink`. A visible white ring on some profile photos is caused by the photo file having a white studio background — it is not a CSS issue and cannot be fixed in code.
+**ProfileCard** (`src/components/profile-card.tsx`) — circular photo (h-56 w-56 rounded-full overflow-hidden), fallback background `bg-brand-pink` (coral). A visible white ring on some profile photos is caused by the photo file having a white studio background — it is not a CSS issue and cannot be fixed in code.
 
 **Color classes** — always use the `brand-*` Tailwind utilities for the primary colors, never raw hex or `green-*` classes:
 
 | Class                           | Hex       | Usage                                      |
 |---------------------------------|-----------|---------------------------------------------|
-| `brand-green-light`             | `#E3FFE3` | Hover backgrounds, navbar bottom           |
-| `brand-green`                   | `#AFFDAF` | Primary — logo, active links, badges       |
-| `brand-green-dark`              | `#4AAD4A` | Borders, darker accents                    |
-| `brand-yellow-light`            | `#FFFF99` | Light yellow — backgrounds                 |
-| `brand-yellow`                  | `#FFFF50` | Secondary — highlights, about section      |
-| `brand-yellow-dark`             | `#C8C800` | Dark yellow — borders, darker accents      |
-| `brand-pink-light`              | `#FEE8FE` | Light pink backgrounds                     |
-| `brand-pink`                    | `#FDB9FC` | Tertiary — footer, distance courses        |
-| `brand-pink-dark`               | `#CC7ACC` | Gradient start for pink sections           |
+| `brand-green-light`             | `#E3F1F9` | Light sky — hover backgrounds, navbar bottom |
+| `brand-green`                   | `#A6CFE6` | Sky — primary: logo, active links, badges  |
+| `brand-green-dark`              | `#1F5A78` | Deep sky — borders, links, button hover    |
+| `brand-yellow-light`            | `#FCE7CE` | Light sunset — backgrounds                 |
+| `brand-yellow`                  | `#F6C68F` | Sunset — Why Us band, highlights           |
+| `brand-yellow-glow`             | `#F2B183` | Sunset coral — Why Us gradient, bottom stop |
+| `brand-yellow-dark`             | `#8E4A16` | Dark sunset — borders, darker accents      |
+| `brand-pink-light`              | `#FCE0DA` | Light coral — studio rows, backgrounds     |
+| `brand-pink`                    | `#F5C2B8` | Coral — tertiary: distance courses         |
+| `brand-pink-dark`               | `#9C4436` | Dark coral — **dark surface, light text**  |
+| `brand-deep-sea`                | `#17506A` | Sea — footer gradient, top stop            |
+| `brand-deep-sea-dark`           | `#0F3644` | Deep sea — footer gradient, bottom stop    |
+| `brand-sea-foam`                | `#C3DAE2` | Muted text on the footer's dark ground     |
 | `brand-blue-light`              | `#DCEEFF` | Light blue backgrounds                     |
 | `brand-blue`                    | `#A0D4FF` | Quaternary — news cards                    |
 | `brand-blue-dark`               | `#3A82C8` | Blue hover accents                         |
@@ -367,8 +371,8 @@ See [DESIGN.md](DESIGN.md) for the full visual design spec (colors, typography, 
 | `brand-parchment-dark-dark`     | `#A89060` | Deep parchment — darkest level, used for text on light parchment |
 
 **Gradients** — use Tailwind v4 syntax (top → bottom):
-- Navbar: `bg-linear-to-b from-brand-green to-brand-green-light`
-- Pink footer: `bg-linear-to-b from-brand-pink-dark to-brand-pink`
+- Navbar: `bg-linear-to-b from-brand-green to-brand-green-light` (sky)
+- Footer: `bg-linear-to-b from-brand-deep-sea to-brand-deep-sea-dark` — the site's only dark surface; it carries `text-white` / `text-brand-sea-foam`, and its links use `text-brand-yellow hover:text-white`
 
 **Buttons** — primary uses `border border-brand-green-dark bg-brand-green text-gray-900 hover:bg-brand-green-dark hover:text-white`. See `ButtonLink` (`src/components/button-link.tsx`) and `.rich-content a.rte-btn` in `globals.css`.
 

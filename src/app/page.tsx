@@ -259,7 +259,7 @@ export default async function HomePage() {
 
       {/* Why Us? — fixed yellow section, always at the bottom */}
       {homeRow?.whyUsText && (
-        <section className="bg-brand-yellow px-4 py-16">
+        <section className="bg-linear-to-b from-brand-yellow to-brand-yellow-glow px-4 py-16">
           <div className="mx-auto max-w-7xl">
             {homeRow.whyUsHeadingVisible === 1 &&
               homeRow.whyUsHeading && (

@@ -1,6 +1,6 @@
 export function SchoolLogo({
   size = 40,
-  color = "#AFFDAF",
+  color = "#A6CFE6",
   className,
 }: {
   size?: number;

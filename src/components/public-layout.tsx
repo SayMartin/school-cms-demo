@@ -19,7 +19,7 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
           tree={SCHOOL_NAV_TREE}
           isOpen={tartaOpen}
           onClose={() => setTartaOpen(false)}
-          defaultColor="#3a7d44"
+          defaultColor="#1f5a78"
         />
       </div>
       <main className="flex-1">{children}</main>

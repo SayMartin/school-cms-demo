@@ -51,7 +51,7 @@ export function BrandColorPicker({
             className="h-10 w-10 rounded-full border-4 transition-all hover:scale-110"
             style={{
               backgroundColor: c.hex,
-              borderColor: value === c.token ? "#4aad4a" : "transparent",
+              borderColor: value === c.token ? "#1f5a78" : "transparent",
             }}
           />
         ))}

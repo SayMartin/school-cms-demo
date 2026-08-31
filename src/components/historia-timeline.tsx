@@ -212,7 +212,7 @@ export function HistoriaTimeline({ entries, heading, headingVisible, headingColo
                 ref={arcPathRef}
                 d=""
                 fill="none"
-                stroke="#4aad4a"
+                stroke="#1f5a78"
                 strokeWidth="3"
               />
             </svg>
