@@ -246,10 +246,15 @@ Transactional email (maintenance-report notifications, password resets, account 
 ## Deployment
 
 Manual deploy only — `npm run build:cloudflare && npm run deploy`. There is no
-CI/CD pipeline in this repo and no `production` environment in
+deploy pipeline in this repo and no `production` environment in
 `wrangler.jsonc`: it only ever targets this demo's own Cloudflare account, D1
 database, and R2 bucket, so there's no path from this repo to the real
 school's production infrastructure.
+
+The one GitHub Actions workflow, `.github/workflows/docs.yml`, regenerates the
+derived documentation in `docs/` and fails if the committed copies are stale.
+It runs `contents: read` only, installs no dependencies, and never
+authenticates to Cloudflare.
 
 ---
 

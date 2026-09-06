@@ -1,0 +1,42 @@
+# Fails when docs/data-model.md or docs/api-matrix.md no longer match the code
+# they are generated from. Both files are derived — see "Generated Maps" in
+# AGENTS.md — so a schema or route change that skips `npm run docs` leaves the
+# committed maps quietly wrong, which is exactly the failure they exist to prevent.
+#
+# This workflow validates only. It never authenticates to Cloudflare and cannot
+# deploy: deploys stay manual, as documented in README.md.
+name: Generated docs
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check-docs-are-current:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # No `npm ci`: both generators are dependency-free Node scripts reading
+      # files from the repo, so installing next/react here would add a minute
+      # to every run for nothing.
+      - name: Regenerate the maps
+        run: npm run docs
+
+      - name: Fail if the committed maps are stale
+        run: |
+          if [ -n "$(git status --porcelain -- docs/)" ]; then
+            echo "::error::docs/ is out of date. Run 'npm run docs' locally and commit the result."
+            git status --short -- docs/
+            git --no-pager diff -- docs/
+            exit 1
+          fi
+          echo "docs/ matches the current schema and API routes."

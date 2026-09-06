@@ -107,6 +107,12 @@ npm run preview          # Preview Worker locally at http://localhost:8787
 npm run lint             # Run ESLint
 npx tsc --noEmit         # Type-check without building
 
+# Generated documentation — regenerate and commit whenever the schema or the
+# API routes change; both files are derived, never hand-edited
+npm run docs             # Both of the below
+npm run docs:erd         # docs/data-model.md   — ERD from src/lib/db/schema.ts
+npm run docs:api         # docs/api-matrix.md   — route x guard x table matrix
+
 # Database — this repo has one environment only (the demo D1), no prod
 npm run db:migrate:local         # Apply pending migrations to local D1
 npm run db:migrate:remote        # Apply pending migrations to the demo D1
@@ -120,8 +126,31 @@ npm run seed:demo-users:remote   # Create the demo login accounts (remote)
 
 > **Portfolio-demo repo:** this is a sanitized clone for showing prospective
 > employers how the real production site is built — it has no `production`
-> Cloudflare environment, no CI/CD, and no scripts that reference the real
-> school's D1/R2 by name. All content is invented. See [README.md](README.md).
+> Cloudflare environment, no deploy automation, and no scripts that reference
+> the real school's D1/R2 by name. The single GitHub Actions workflow only
+> verifies that `docs/` is current; it holds no Cloudflare credentials and
+> cannot deploy. All content is invented. See [README.md](README.md).
+
+## Generated Maps
+
+Two derived documents are checked in, because neither fact is visible from any
+single file:
+
+- **[docs/data-model.md](docs/data-model.md)** — a Mermaid ERD of the 19 tables
+  that carry foreign keys, the 28 standalone `*Content` singletons listed
+  separately, and the FK-shaped columns that have *no* constraint (notably
+  `sidebarProfileIds`, a JSON array of `Profile` ids).
+- **[docs/api-matrix.md](docs/api-matrix.md)** — every API handler mapped to its
+  role guard, whether `demoLockCheck()` blocks it, its rate limiter, and the
+  tables it reads and writes. It also checks three invariants on each run:
+  mutating handlers with no protection at all, public writes to tables holding
+  personal data, and drift between the caller list documented in
+  `demo-lock.ts` and the routes that actually call it.
+
+Regenerate with `npm run docs` and commit the result in the same change. Do not
+edit either file by hand — [.github/workflows/docs.yml](.github/workflows/docs.yml)
+regenerates both on every push and pull request and fails the run if the
+committed copies differ, so stale maps break the build rather than mislead.
 
 ## Project Structure
 

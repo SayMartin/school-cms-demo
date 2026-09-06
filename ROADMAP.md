@@ -23,7 +23,7 @@ The project has a complete, working Next.js 16 App Router application with:
 
 This repository is a sanitized demo clone: its own Cloudflare account, D1
 database, and R2 bucket, fully invented content, mocked outbound email, and no
-`production` environment or CI/CD pipeline.
+`production` environment or deploy pipeline.
 
 Because the demo Studio password is published on `/sign-in`, **every public form
 is inert**: course applications, venue inquiries and maintenance reports all
@@ -86,9 +86,11 @@ and working — see the `src/app/` and `src/app/api/` directory trees in
 ## Deployment
 
 Manual deploy only — `npm run build:cloudflare && npm run deploy`. There is no
-CI/CD pipeline and no `production` environment in `wrangler.jsonc`: the config
+deploy pipeline and no `production` environment in `wrangler.jsonc`: the config
 only ever targets this demo's own Cloudflare account, D1 database
-(`school-cms-demo-db`), and R2 bucket (`school-cms-demo-bucket`).
+(`school-cms-demo-db`), and R2 bucket (`school-cms-demo-bucket`). The only
+GitHub Actions workflow checks that the generated maps in `docs/` are current;
+it has no Cloudflare credentials and cannot deploy.
 
 ---
 
