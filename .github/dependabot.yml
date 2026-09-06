@@ -1,0 +1,25 @@
+# Security updates only — this repo has no scheduled dependency-bump PRs, which
+# is what `open-pull-requests-limit: 0` preserves. Security updates run
+# independently of that limit and are unaffected.
+#
+# The group exists because ungrouped security updates fail on this dependency
+# tree. Every @tiptap/* package pins @tiptap/core to an exact version, so when an
+# advisory lands on core, Dependabot has no update path for it alone and the run
+# errors with `fix_available: false`. Bumping the whole family in one pull
+# request is the only resolution npm can produce — see the tiptap 3.28 -> 3.31
+# upgrade for what that looks like by hand.
+#
+# `applies-to: security-updates` is required: without it a group only affects
+# scheduled version updates, and each advisory would still open its own PR.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
+    groups:
+      tiptap:
+        applies-to: security-updates
+        patterns:
+          - "@tiptap/*"
